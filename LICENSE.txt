@@ -1,5 +1,5 @@
 Package: de.systopia.selectioncorrection
-Copyright (C) 2019, B.Zschiedrich <zschiedrich@systopia.de>
+Copyright (C) 2019, SYSTOPIA <info@systopia.de>
 Licensed under the GNU Affero Public License 3.0 (below).
 
 -------------------------------------------------------------------------------
