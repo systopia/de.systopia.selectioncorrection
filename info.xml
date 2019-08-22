@@ -1,26 +1,26 @@
 <?xml version="1.0"?>
 <extension key="de.systopia.selectioncorrection" type="module">
   <file>selectioncorrection</file>
-  <name>FIXME</name>
-  <description>FIXME</description>
+  <name>Selection Wizzard</name>
+  <description>Complex improvements of selections</description>
   <license>AGPL-3.0</license>
   <maintainer>
-    <author>B.Zschiedrich</author>
+    <author>SYSTOPIA</author>
     <email>zschiedrich@systopia.de</email>
   </maintainer>
   <urls>
-    <url desc="Main Extension Page">http://FIXME</url>
-    <url desc="Documentation">http://FIXME</url>
-    <url desc="Support">http://FIXME</url>
+    <url desc="Main Extension Page">https://github.com/systopia/de.systopia.selectioncorrection</url>
+    <url desc="Documentation">https://github.com/systopia/de.systopia.selectioncorrection</url>
+    <url desc="Support">https://github.com/systopia/de.systopia.selectioncorrection/issues</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
-  <releaseDate>2019-08-22</releaseDate>
-  <version>1.0</version>
-  <develStage>alpha</develStage>
+  <releaseDate></releaseDate>
+  <version>0.1-dev</version>
+  <develStage>dev</develStage>
   <compatibility>
     <ver>5.0</ver>
   </compatibility>
-  <comments>This is a new, undeveloped module</comments>
+  <comments></comments>
   <civix>
     <namespace>CRM/Selectioncorrection</namespace>
   </civix>
