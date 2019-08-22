@@ -1,7 +1,39 @@
 <?php
+/*-------------------------------------------------------+
+| SYSTOPIA MULTI PURPOSE SELECTION CLEANUPS              |
+| Copyright (C) 2019 SYSTOPIA                            |
+| Author: B. Zschiedrich (zschiedrich@systopia.de)       |
++--------------------------------------------------------+
+| This program is released as free software under the    |
+| Affero GPL license. You can redistribute it and/or     |
+| modify it under the terms of this license which you    |
+| can read by viewing the included agpl.txt or online    |
+| at www.gnu.org/licenses/agpl.html. Removal of this     |
+| copyright header is strictly prohibited without        |
+| written permission from the original author(s).        |
++--------------------------------------------------------*/
+
 
 require_once 'selectioncorrection.civix.php';
 use CRM_Selectioncorrection_ExtensionUtil as E;
+
+
+/**
+ * Add contact search tasks to submit tax excemption XMLs
+ *
+ * @param string $objectType specifies the component
+ * @param array $tasks the list of actions
+ *
+ * @access public
+ */
+function selectioncorrection_civicrm_searchTasks($objectType, &$tasks) {
+  if ($objectType == 'contact') {
+    $tasks[] = array(
+        'title'  => E::ts('Cleanup'),
+        'class'  => 'CRM_Selectioncorrection_Form_Task_Cleanup',
+        'result' => false);
+  }
+}
 
 /**
  * Implements hook_civicrm_config().
