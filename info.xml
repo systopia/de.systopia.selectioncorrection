@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <extension key="de.systopia.selectioncorrection" type="module">
   <file>selectioncorrection</file>
-  <name>Selection Wizzard</name>
+  <name>Selection Wizard</name>
   <description>Complex improvements of selections</description>
   <license>AGPL-3.0</license>
   <maintainer>
