@@ -13,7 +13,7 @@
 | written permission from the original author(s).        |
 +--------------------------------------------------------*/
 
-use CRM_Xportx_ExtensionUtil as E;
+use CRM_Selectioncorrection_ExtensionUtil as E;
 require_once 'CRM/Core/Form.php';
 
 /**
@@ -55,16 +55,16 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task {
         'contact_person_org_1434' => ['value', 'value2']
     ]);
 
-    $contact_person[] = [
-        'org_id' => 43,
-        'img' =>  CRM_Contact_BAO_Contact_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']),
-        'contacts ' => [
-          43 => [
-              'name' => 'sda',
-              'img' =>  CRM_Contact_BAO_Contact_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']),
-          ],
-        ],
-    ];
+    //$contact_person[] = [
+    //    'org_id' => 43,
+    //    'img' =>  CRM_Contact_BAO_Contacteset=1 [filter_1] =_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']),
+    //    'contacts ' => [
+    //      43 => [
+    //          'name' => 'sda',
+    //          'img' =>  CRM_Contact_BAO_Contact_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']),
+    //      ],
+    //    ],
+    //];
 //    $popup_img = CRM_Contact_BAO_Contact_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']);
 //    $this->assign("contact_person_org_1434_popup", $popup_img);
     // {$contact_person_org_1434_popup}
@@ -86,5 +86,7 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task {
 //    $configuration = $configurations[$selected_config];
 //    $export = new CRM_Xportx_Export($configuration);
 //    $export->writeToStream($this->_contactIds);
+
+
   }
 }

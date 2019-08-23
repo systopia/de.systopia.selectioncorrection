@@ -23,8 +23,7 @@ class CRM_Selectioncorrection_Config {
   /**
    * @param $name string settigs name
    */
-  public static function getSetting($name)
-  {
+  public static function getSetting($name) {
     $settings = self::getSettings();
     return CRM_Utils_Array::value($name, $settings, NULL);
   }
@@ -32,8 +31,7 @@ class CRM_Selectioncorrection_Config {
   /**
    * @return array settings
    */
-  public static function getSettings()
-  {
+  public static function getSettings() {
     $settings = CRM_Core_BAO_Setting::getItem('de.systopia.selectioncorrection', 'selectioncorrection_settings');
     if ($settings && is_array($settings)) {
       return $settings;
@@ -47,8 +45,7 @@ class CRM_Selectioncorrection_Config {
    *
    * @return array settings
    */
-  public static function setSettings($settings)
-  {
+  public static function setSettings($settings) {
     CRM_Core_BAO_Setting::setItem($settings, 'de.systopia.selectioncorrection', 'selectioncorrection_settings');
   }
 }
