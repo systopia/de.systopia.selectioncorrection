@@ -23,6 +23,10 @@ require_once 'CRM/Core/Form.php';
  */
 class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task {
 
+  function preProcess() {
+    CRM_Selectioncorrection_Storage::initialise($this);
+  }
+
   /**
    * Compile task form
    */
