@@ -28,17 +28,16 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task {
   }
 
   /**
-   * Compile task form
+   * Build the quickform for the preselection of filters and the target group.
    */
-  function buildQuickForm() {
+  private function buildPreselection() {
     // init export object
     $checkbox = $this->add(
-        'checkbox',
-        'filter_1',
-        E::ts('Inactive')
+      'checkbox',
+      'filter_1',
+      E::ts('Inactive')
     );
     $checkbox->freeze();
-
 
     $this->add(
         'select',
@@ -49,12 +48,19 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task {
         ['class' => 'crm-select2 huge', 'multiple' => 'multiple']
     );
 
-
     $this->setDefaults([
-        'filter_1'                => true,
-        'contact_person_org_1434' => ['value', 'value2']
+      'filter_1'                => true,
+      'last_page'               => 'preselection',
+      'contact_person_org_1434' => ['value', 'value2'],
     ]);
 
+    CRM_Core_Form::addDefaultButtons(E::ts("Filter"), 'submit');
+  }
+
+  /**
+   * Build the quickform for the contact person definition.
+   */
+  private function buildContactPersonDefinition() {
     //$contact_person[] = [
     //    'org_id' => 43,
     //    'img' =>  CRM_Contact_BAO_Contacteset=1 [filter_1] =_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']),
@@ -65,16 +71,39 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task {
     //      ],
     //    ],
     //];
-//    $popup_img = CRM_Contact_BAO_Contact_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']);
-//    $this->assign("contact_person_org_1434_popup", $popup_img);
+    //$popup_img = CRM_Contact_BAO_Contact_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']);
+    //$this->assign("contact_person_org_1434_popup", $popup_img);
     // {$contact_person_org_1434_popup}
 
-    CRM_Core_Form::addDefaultButtons(E::ts("Export"));
+    $this->setDefaults([
+      'last_page' => 'contact_person_definition',
+    ]);
+
+    CRM_Core_Form::addDefaultButtons(E::ts("Set")); //FIXME: Back button does not work here because of our multi page system.
   }
 
+  /**
+   * Compile task form
+   */
+  function buildQuickForm() {
+    // Add an element containing current page identifier:
+    $this->add(
+      'hidden',
+      'last_page'
+    );
+
+    $values = $this->exportValues();
+
+    if ($values['last_page'] == 'preselection') { // TODO: The page identifiers should be a class constant.
+      $this->buildContactPersonDefinition();
+    } else {
+      $this->buildPreselection();
+    }
+  }
 
   function postProcess() {
     $values = $this->exportValues();
+
 //    $selected_config = $values['export_configuration'];
 //    $configurations = CRM_Xportx_Export::getExportConfigurations();
 //
