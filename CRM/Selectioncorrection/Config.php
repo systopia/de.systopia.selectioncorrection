@@ -13,6 +13,42 @@
 | written permission from the original author(s).        |
 +--------------------------------------------------------*/
 
+/**
+ * Form controller class
+ *
+ * @see https://wiki.civicrm.org/confluence/display/CRMDOC/QuickForm+Reference
+ */
 class CRM_Selectioncorrection_Config {
 
+  /**
+   * @param $name string settigs name
+   */
+  public static function getSetting($name)
+  {
+    $settings = self::getSettings();
+    return CRM_Utils_Array::value($name, $settings, NULL);
+  }
+
+  /**
+   * @return array settings
+   */
+  public static function getSettings()
+  {
+    $settings = CRM_Core_BAO_Setting::getItem('de.systopia.selectioncorrection', 'selectioncorrection_settings');
+    if ($settings && is_array($settings)) {
+      return $settings;
+    } else {
+      return [];
+    }
+  }
+
+  /**
+   * Stores settings
+   *
+   * @return array settings
+   */
+  public static function setSettings($settings)
+  {
+    CRM_Core_BAO_Setting::setItem($settings, 'de.systopia.selectioncorrection', 'selectioncorrection_settings');
+  }
 }
