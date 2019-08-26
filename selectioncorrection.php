@@ -42,6 +42,12 @@ function selectioncorrection_civicrm_searchTasks($objectType, &$tasks) {
  */
 function selectioncorrection_civicrm_config(&$config) {
   _selectioncorrection_civix_civicrm_config($config);
+
+  // Include composer autoload for it to be available everywhere with "use":
+  $extRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+  $include_path = $extRoot . DIRECTORY_SEPARATOR . 'vendor' . PATH_SEPARATOR . get_include_path( );
+  set_include_path( $include_path );
+  require_once 'vendor/autoload.php';
 }
 
 /**
