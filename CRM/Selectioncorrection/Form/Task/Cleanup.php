@@ -55,6 +55,8 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task {
     ]);
 
     CRM_Core_Form::addDefaultButtons(E::ts("Filter"), 'submit');
+
+    CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters([]);
   }
 
   /**
