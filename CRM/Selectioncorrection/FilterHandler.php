@@ -24,6 +24,12 @@ class CRM_Selectioncorrection_FilterHandler {
    */
   private $filters = [];
 
+  function __construct() {
+    $this->filters = [
+      new CRM_Selectioncorrection_Filter_NotDeceased(),
+    ];
+  }
+
   /**
   * Get the filter handler singleton
   */
@@ -32,12 +38,6 @@ class CRM_Selectioncorrection_FilterHandler {
       self::$singleton = new CRM_Selectioncorrection_FilterHandler();
     }
     return self::$singleton;
-  }
-
-  function __construct() {
-    $this->filters = [
-      new CRM_Selectioncorrection_Filter_NotDeceased(),
-    ];
   }
 
   /**
