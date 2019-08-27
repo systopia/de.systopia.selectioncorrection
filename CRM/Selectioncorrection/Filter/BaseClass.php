@@ -15,23 +15,24 @@
 
 use \NilPortugues\Sql\QueryBuilder\Syntax\Where;
 
-abstract class CRM_Selectioncorrection_Filter_BaseClass {
+abstract class CRM_Selectioncorrection_Filter_BaseClass
+{
+    protected $name = 'BaseClass';
 
-  protected $name = 'BaseClass';
+    public $isActive = true;
 
-  public $isActive = true;
+    public function getName ()
+    {
+        return $this->name;
+    }
 
-  public function getName() {
-    return $this->name;
-  }
+    public function addJoin ($select)
+    {
+        return $select;
+    }
 
-  public function addJoin($select) {
-    return $select;
-  }
-
-  /**
-   * @param Where $where
-   */
-  abstract public function addWhere(Where $where);
-
+    /**
+     * @param Where $where
+     */
+    abstract public function addWhere (Where $where);
 }

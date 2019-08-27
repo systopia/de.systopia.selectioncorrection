@@ -15,19 +15,20 @@
 
 use \NilPortugues\Sql\QueryBuilder\Syntax\Where;
 
-class CRM_Selectioncorrection_Filter_NotDeceased extends CRM_Selectioncorrection_Filter_BaseClass {
+class CRM_Selectioncorrection_Filter_NotDeceased extends CRM_Selectioncorrection_Filter_BaseClass
+{
+    protected $name = 'NotDeceased';
 
-  protected $name = 'NotDeceased';
+    /**
+    * @param Where $where
+    */
+    public function addWhere (Where $where)
+    {
+        $subwhere = $where->subWhere('OR');
 
-  /**
-  * @param Where $where
-  */
-  public function addWhere(Where $where) {
-    $subwhere = $where->subWhere('OR');
+        $result = $subwhere->equals('is_deceased', 0)
+                           ->isNull('is_deceased');
 
-    $result = $subwhere->equals('is_deceased', 0)
-                       ->isNull('is_deceased');
-
-    return $result;
-  }
+        return $result;
+    }
 }

@@ -13,36 +13,40 @@
 | written permission from the original author(s).        |
 +--------------------------------------------------------*/
 
-class CRM_Selectioncorrection_Storage {
+class CRM_Selectioncorrection_Storage
+{
+    private const PREFIX = 'selectioncorrection_storage_';
+    private static $storage = NULL;
 
-  private const PREFIX = 'selectioncorrection_storage_';
-  private static $storage = NULL;
-
-  /**
-   * Initialises the storage system.
-   * @param CRM_Contact_Form_Task $form The form that the storage will be saved in.
-   */
-  public static function initialise($form) {
-    if (self::$storage === NULL) {
-      self::$storage = $form;
+    /**
+     * Initialises the storage system.
+     * @param CRM_Contact_Form_Task $form The form that the storage will be saved in.
+     */
+    public static function initialise ($form)
+    {
+        if (self::$storage === NULL)
+        {
+            self::$storage = $form;
+        }
     }
-  }
 
-  /**
-   * Gets a value from the storage by key.
-   * @param string $key
-   * @return mixed The value of the stored object.
-   */
-  public static function get($key) {
-    return self::$storage->get(self::PREFIX . $key);
-  }
+    /**
+     * Gets a value from the storage by key.
+     * @param string $key
+     * @return mixed The value of the stored object.
+     */
+    public static function get ($key)
+    {
+        return self::$storage->get(self::PREFIX . $key);
+    }
 
-  /**
-   * Sets a value to the storage by key.
-   * @param string $key
-   * @param mixed $value
-   */
-  public static function set($key, $value) {
-    self::$storage->set(self::PREFIX . $key, $value);
-  }
+    /**
+     * Sets a value to the storage by key.
+     * @param string $key
+     * @param mixed $value
+     */
+    public static function set ($key, $value)
+    {
+        self::$storage->set(self::PREFIX . $key, $value);
+    }
 }
