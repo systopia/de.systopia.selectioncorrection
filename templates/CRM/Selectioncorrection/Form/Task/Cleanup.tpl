@@ -12,10 +12,13 @@
 | written permission from the original author(s).        |
 +--------------------------------------------------------*}
 
-<div class="crm-section">
-  <div class="label">{$form.filter_1.label}</div>
-  <div class="content">{$form.filter_1.html}</div>
-  <div class="clear"></div>
-</div>
+{if $current_page == $preselection_page_name}
+  <div class="crm-section">
+    <div class="label">{$form.filter_1.label}</div>
+    <div class="content">{$form.filter_1.html}</div>
+    <div class="clear"></div>
+  </div>
+{else}
+{/if}
 
 {include file="CRM/common/formButtons.tpl" location="bottom"}
