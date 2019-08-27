@@ -67,16 +67,21 @@ class CRM_Selectioncorrection_FilterHandler
         // Add all joins to the query:
         foreach ($this->filters as $filter)
         {
-            $query = $filter->addJoin($query);
+            $filter->addJoin($query);
         }
 
+        $where = $query->where();
+
         // Add all where clauses to the query:
-        $query = $query->where();
         foreach ($this->filters as $filter)
         {
-            $query = $filter->addWhere($query);
+            $filter->addWhere($where);
         }
-        $query = $query->end();
+
+        // Include only the selected contacts:
+        $where = $where->in('id', $contactIds);
+
+        $query = $where->end();
 
         // Fill the named parameters in the query:
         //TODO: Maybe we should change this to use the DAO parameters with % instead?

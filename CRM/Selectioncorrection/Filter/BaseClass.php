@@ -21,7 +21,18 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
     protected $optional = true;
     protected $active = true;
 
-    public $isActive = true;
+    /**
+     * Adds a subwhere statement for checking if a column is zero or null.
+     * @param Where $where The where statement this should be added to.
+     * @param string $column The column which shall be checked.
+     */
+    protected function addSubwhereIsZeroOrNull(Where $where, string $column)
+    {
+        $subwhere = $where->subWhere('OR');
+
+        $subwhere->equals($column, 0)
+                 ->isNull($column);
+    }
 
     public function getName ()
     {
@@ -51,7 +62,7 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
 
     public function addJoin ($select)
     {
-        return $select;
+        // Add nothing as default.
     }
 
     /**

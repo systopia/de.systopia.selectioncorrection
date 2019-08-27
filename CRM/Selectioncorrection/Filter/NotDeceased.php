@@ -25,11 +25,6 @@ class CRM_Selectioncorrection_Filter_NotDeceased extends CRM_Selectioncorrection
     */
     public function addWhere (Where $where)
     {
-        $subwhere = $where->subWhere('OR');
-
-        $result = $subwhere->equals('is_deceased', 0)
-                           ->isNull('is_deceased');
-
-        return $result;
+        $this->addSubwhereIsZeroOrNull($where, 'is_deceased');
     }
 }
