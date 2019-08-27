@@ -28,6 +28,7 @@ class CRM_Selectioncorrection_FilterHandler
     {
         $this->filters = [
             new CRM_Selectioncorrection_Filter_NotDeceased(),
+            new CRM_Selectioncorrection_Filter_AllowsMail(),
         ];
     }
 
