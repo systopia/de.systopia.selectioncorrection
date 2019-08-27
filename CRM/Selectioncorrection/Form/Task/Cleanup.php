@@ -31,6 +31,8 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
     {
         CRM_Selectioncorrection_Storage::initialise($this);
 
+        parent::preProcess();
+
         $this->assign('preselection_page_name', self::PreselectionPageName);
         $this->assign('contact_person_definition_page_name', self::ConstantPersonDefinitionPageName);
     }
@@ -40,6 +42,8 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
      */
     function buildQuickForm ()
     {
+        parent::buildQuickForm();
+
         /**
          * Array holding the default values for every element.
          * Will be set at the end of the function.
@@ -131,6 +135,8 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
 
     function postProcess ()
     {
+        parent::postProcess();
+
         $values = $this->exportValues();
 
         //    $selected_config = $values['export_configuration'];
