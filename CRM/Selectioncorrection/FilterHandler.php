@@ -45,22 +45,12 @@ class CRM_Selectioncorrection_FilterHandler
     }
 
     /**
-     * Lists all available filters.
-     * @return array The list of the filters with some metadata.
+     * Get all available filters.
+     * @return CRM_Selectioncorrection_Filter_BaseClass[] The list of the filters.
      */
-    public function listFilters ()
+    public function getFilters ()
     {
-        // FIXME: Implement.
-    }
-
-    /**
-     * Enables or disables a filter.
-     * @param string $filterName The name/identifier of the filter.
-     * @param bool $filterIsActive True to enable the filter, false to disable.
-     */
-    public function setFilterStatus ($filterName, $filterIsActive)
-    {
-        // FIXME: Implement.
+        return $this->filters;
     }
 
     /**
@@ -96,6 +86,13 @@ class CRM_Selectioncorrection_FilterHandler
 
         $queryResult = CRM_Core_DAO::executeQuery($sql);
 
-        print_r($queryResult->fetchAll());
+        $resultIds = [];
+
+        while ($queryResult->fetch())
+        {
+            $resultIds[] = $queryResult->id;
+        }
+
+        return $resultIds;
     }
 }

@@ -13,11 +13,13 @@
 +--------------------------------------------------------*}
 
 {if $current_page == $preselection_page_name}
-  <div class="crm-section">
-    <div class="label">{$form.filter_1.label}</div>
-    <div class="content">{$form.filter_1.html}</div>
-    <div class="clear"></div>
-  </div>
+  {foreach from=$filter_identifiers item=identifier}
+    <div class="crm-section">
+      <div class="label">{$form[$identifier].label}</div>
+      <div class="content">{$form[$identifier].html}</div>
+      <div class="clear"></div>
+    </div>
+  {/foreach}
 {else}
 {/if}
 

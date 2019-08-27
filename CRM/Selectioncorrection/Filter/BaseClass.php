@@ -18,12 +18,35 @@ use \NilPortugues\Sql\QueryBuilder\Syntax\Where;
 abstract class CRM_Selectioncorrection_Filter_BaseClass
 {
     protected $name = 'BaseClass';
+    protected $optional = true;
+    protected $active = true;
 
     public $isActive = true;
 
     public function getName ()
     {
         return $this->name;
+    }
+
+    /**
+     * Gets an unique identifier for the filter.
+     * @return string
+     */
+    public function getIdentifier ()
+    {
+        $identifier = 'filter_' . strtolower($this->name);
+        return $identifier;
+    }
+
+    public function isOptional ()
+    {
+        return $this->optional;
+    }
+
+    public function isActive ()
+    {
+        return $this->active;
+        // TODO: This value must be saved in the storage. Either here (encapsulated but circular) or directly in the form.
     }
 
     public function addJoin ($select)

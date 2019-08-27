@@ -40,6 +40,12 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
      */
     function buildQuickForm ()
     {
+        /**
+         * Array holding the default values for every element.
+         * Will be set at the end of the function.
+         */
+        $defaults = [];
+
         // Add an element containing current page identifier:
         $this->add(
             'hidden',
@@ -47,12 +53,31 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
         );
 
         // Preselection elements:
-        $checkbox = $this->add(
-            'checkbox',
-            'filter_1',
-            E::ts('Inactive')
-        );
-        $checkbox->freeze();
+
+        $filters = CRM_Selectioncorrection_FilterHandler::getSingleton()->getFilters();
+        $filterIdentifiers = [];
+
+        foreach ($filters as $filter)
+        {
+            $identifier = $filter->getIdentifier();
+
+            $checkbox = $this->add(
+                'checkbox',
+                $identifier,
+                E::ts($filter->getName())
+            );
+
+            if (!$filter->isOptional())
+            {
+                $checkbox->freeze();
+            }
+
+            $defaults[$identifier] = $filter->isActive();
+
+            $filterIdentifiers[] = $identifier;
+        }
+
+        $this->assign('filter_identifiers', $filterIdentifiers);
 
         $this->add(
             'select',
@@ -84,9 +109,7 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
         {
             $this->assign('current_page', self::ConstantPersonDefinitionPageName);
 
-            $this->setDefaults([
-                'last_page' => self::ConstantPersonDefinitionPageName,
-            ]);
+            $defaults['last_page'] = self::ConstantPersonDefinitionPageName;
 
             CRM_Core_Form::addDefaultButtons(E::ts("Set")); //FIXME: Back button does not work here because of our multi page system.
         }
@@ -94,20 +117,20 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
         {
             $this->assign('current_page', self::PreselectionPageName);
 
-            $this->setDefaults([
-                'last_page' => self::PreselectionPageName,
-                'filter_1' => true,
-                'contact_person_org_1434' => ['value', 'value2'],
-            ]);
+            $defaults['last_page'] = self::PreselectionPageName;
 
             CRM_Core_Form::addDefaultButtons(E::ts("Filter"), 'submit');
         }
 
-    CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters([]);
-  }
+        $this->setDefaults($defaults);
 
-  function postProcess ()
-  {
+        print_r($this->_contactIds);
+        print("<br>-----<br>");
+        print_r(CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters($this->_contactIds));
+    }
+
+    function postProcess ()
+    {
         $values = $this->exportValues();
 
         //    $selected_config = $values['export_configuration'];

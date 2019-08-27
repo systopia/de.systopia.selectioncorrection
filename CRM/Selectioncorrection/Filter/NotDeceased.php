@@ -18,6 +18,7 @@ use \NilPortugues\Sql\QueryBuilder\Syntax\Where;
 class CRM_Selectioncorrection_Filter_NotDeceased extends CRM_Selectioncorrection_Filter_BaseClass
 {
     protected $name = 'NotDeceased';
+    protected $optional = false;
 
     /**
     * @param Where $where
