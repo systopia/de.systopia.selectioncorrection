@@ -24,6 +24,7 @@ require_once 'CRM/Core/Form.php';
  */
 class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
 {
+    private const LastPageIdentifier = 'last_page';
     private const PreselectionPageName = 'preselection';
     private const ConstantPersonDefinitionPageName = 'contact_person_definition';
 
@@ -53,13 +54,13 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
         // Add an element containing current page identifier:
         $this->add(
             'hidden',
-            'last_page'
+            self::LastPageIdentifier
         );
 
         // Preselection elements:
 
-        $filters = CRM_Selectioncorrection_FilterHandler::getSingleton()->getFilters();
-        $filterIdentifiers = [];
+        $filterHandler = CRM_Selectioncorrection_FilterHandler::getSingleton();
+        $filters = $filterHandler->getFilters();
 
         foreach ($filters as $filter)
         {
@@ -77,18 +78,16 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
             }
 
             $defaults[$identifier] = $filter->isActive();
-
-            $filterIdentifiers[] = $identifier;
         }
 
-        $this->assign('filter_identifiers', $filterIdentifiers);
+        $this->assign('filter_identifiers', $filterHandler->getFilterIdentifiers());
 
         $this->add(
             'select',
             'contact_person_org_1434',
             E::ts('Contact Person'),
             ['value' => 'label', 'value2' => 'label2'],
-            FALSE,
+            false,
             ['class' => 'crm-select2 huge', 'multiple' => 'multiple']
         );
 
@@ -109,11 +108,11 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
 
         $values = $this->exportValues();
 
-        if ($values['last_page'] == 'preselection')
+        if ($values[self::LastPageIdentifier] == 'preselection')
         {
             $this->assign('current_page', self::ConstantPersonDefinitionPageName);
 
-            $defaults['last_page'] = self::ConstantPersonDefinitionPageName;
+            $defaults[self::LastPageIdentifier] = self::ConstantPersonDefinitionPageName;
 
             CRM_Core_Form::addDefaultButtons(E::ts("Set")); //FIXME: Back button does not work here because of our multi page system.
         }
@@ -121,7 +120,7 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
         {
             $this->assign('current_page', self::PreselectionPageName);
 
-            $defaults['last_page'] = self::PreselectionPageName;
+            $defaults[self::LastPageIdentifier] = self::PreselectionPageName;
 
             CRM_Core_Form::addDefaultButtons(E::ts("Filter"), 'submit');
         }
@@ -137,7 +136,29 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
     {
         parent::postProcess();
 
-        $values = $this->exportValues();
+        $filters = CRM_Selectioncorrection_FilterHandler::getSingleton()->getFilters();
+
+        $values = $this->exportValues(null, true);
+        $post = $_POST;
+
+        // Set the status for every filter based on the form values:
+        foreach ($filters as $filter)
+        {
+            $identifier = $filter->getIdentifier();
+
+            $isChecked = array_key_exists($identifier, $values);
+            $filter->setActive($isChecked);
+        }
+
+        //
+        print("<br><br>");
+        foreach ($filters as $filter)
+        {
+            print($filter->getName());
+            print(" is ");
+            print($filter->isActive());
+            print("<br>");
+        }
 
         //    $selected_config = $values['export_configuration'];
         //    $configurations = CRM_Xportx_Export::getExportConfigurations();
