@@ -41,6 +41,27 @@ class CRM_Selectioncorrection_Storage
     }
 
     /**
+     * Tries to get a value from the storage by key.
+     * If it is not set or null the given default will be returned.
+     * @param string $key
+     * @param mixed $default The default that will be returned if the value is null.
+     * @return mixed The value of the stored object or the given default.
+     */
+    public static function getWithDefault ($key, $default)
+    {
+        $result = self::$storage->get(self::PREFIX . $key);
+
+        if (($result === null))
+        {
+            return $default;
+        }
+        else
+        {
+            return $result;
+        }
+    }
+
+    /**
      * Sets a value to the storage by key.
      * @param string $key
      * @param mixed $value
