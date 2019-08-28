@@ -16,15 +16,19 @@
 class CRM_Selectioncorrection_Storage
 {
     private const PREFIX = 'selectioncorrection_storage_';
-    private static $storage = NULL;
+    /**
+     * We use the form of the current task to store values persistently.
+     * @var CRM_Contact_Form_Task $storage
+     */
+    private static $storage = null;
 
     /**
      * Initialises the storage system.
      * @param CRM_Contact_Form_Task $form The form that the storage will be saved in.
      */
-    public static function initialise ($form)
+    public static function initialise (CRM_Contact_Form_Task $form)
     {
-        if (self::$storage === NULL)
+        if (self::$storage === null)
         {
             self::$storage = $form;
         }

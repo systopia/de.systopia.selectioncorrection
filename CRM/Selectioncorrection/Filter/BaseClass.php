@@ -33,7 +33,7 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
      * @param Where $where The where statement this should be added to.
      * @param string $column The column which shall be checked.
      */
-    protected function addSubwhereIsZeroOrNull(Where $where, string $column)
+    protected function addSubwhereIsZeroOrNull (Where $where, string $column)
     {
         $subwhere = $where->subWhere('OR');
 
