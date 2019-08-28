@@ -56,6 +56,21 @@ class CRM_Selectioncorrection_FilterHandler
     }
 
     /**
+     * Get the identifiers of all available filters.
+     * @return string[] The list of filter identifiers.
+     */
+    public function getFilterIdentifiers ()
+    {
+        $filterIdentifiers = [];
+
+        foreach ($this->filters as $filter)
+        {
+            $filterIdentifiers[] = $filter->getIdentifier();
+        }
+        return $filterIdentifiers;
+    }
+
+    /**
      * Performs all active filters on a contact list.
      * @param array $contactIds A list of all contacts to filter.
      * @return array The filtered contact list.
