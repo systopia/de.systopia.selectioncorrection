@@ -19,7 +19,14 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
 {
     protected $name = 'BaseClass';
     protected $optional = true;
-    protected $active = true;
+
+    /**
+     * @return string The key used for saving the status in the storage.
+     */
+    private function getActiveStorageKey ()
+    {
+        return $this->getIdentifier() . '_active';
+    }
 
     /**
      * Adds a subwhere statement for checking if a column is zero or null.
@@ -54,10 +61,25 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
         return $this->optional;
     }
 
+    /**
+     * Set the status of this filter.
+     * @param bool $status True for active and false for inactive.
+     */
+    public function setActive ($status)
+    {
+        $key = $this->getActiveStorageKey();
+
+        CRM_Selectioncorrection_Storage::set($key, $status);
+    }
+
+    /**
+     * @return bool True if the filter is active, otherwise false.
+     */
     public function isActive ()
     {
-        return $this->active;
-        // TODO: This value must be saved in the storage. Either here (encapsulated but circular) or directly in the form.
+        $key = $this->getActiveStorageKey();
+
+        return CRM_Selectioncorrection_Storage::getWithDefault($key, true);
     }
 
     public function addJoin ($select)
