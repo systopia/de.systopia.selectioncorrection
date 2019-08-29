@@ -17,10 +17,32 @@
     <div class="crm-section">
       <div class="label">{$form.$identifier.label}</div>
       <div class="content">{$form.$identifier.html}</div>
-      <div class="clear"></div>
     </div>
   {/foreach}
+  <div class="clear"></div>
+  <div class="crm-section">
+    <div class="label">{$form.relationship_types.label}</div>
+    <div class="content">{$form.relationship_types.html}</div>
+  </div>
+  <div class="clear"></div>
+  <div class="crm-section">
+    <div class="label">{$form.group_name.label}</div>
+    <div class="content">{$form.group_name.html}</div>
+  </div>
 {else}
+  {foreach key=organisation_name item=elements from=$contact_person_definition_organisations_element_list}
+    <div class="crm-section">
+      {$organisation_name}
+      {foreach from=$elements item=identifier}
+        <div class="crm-section">
+          <div class="label">{$form.$identifier.label}</div>
+          <div class="content">{$form.$identifier.html}</div>
+          <div class="clear"></div>
+        </div>
+      {/foreach}
+    <div>
+    <div class="clear"></div>
+  {/foreach}
 {/if}
 
 {include file="CRM/common/formButtons.tpl" location="bottom"}
