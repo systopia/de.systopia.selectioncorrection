@@ -71,6 +71,21 @@ class CRM_Selectioncorrection_FilterHandler
     }
 
     /**
+     * Get the statuses of all available filters.
+     * @return string[] Key is the identifier, value the status.
+     */
+    public function getFilterStatuses ()
+    {
+        $filterStatuses = [];
+
+        foreach ($this->filters as $filter)
+        {
+            $filterStatuses[$filter->getIdentifier()] = $filter->getStatus();
+        }
+        return $filterStatuses;
+    }
+
+    /**
      * Performs all active filters on a contact list.
      * @param array $contactIds A list of all contacts to filter.
      * @return array The filtered contact list.
