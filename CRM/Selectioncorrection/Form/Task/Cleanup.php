@@ -77,7 +77,6 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
                 $checkbox->freeze();
             }
 
-            $defaults[$identifier] = $filter->isActive();
         }
 
         $this->assign('filter_identifiers', $filterHandler->getFilterIdentifiers());
@@ -147,7 +146,7 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
             $identifier = $filter->getIdentifier();
 
             $isChecked = array_key_exists($identifier, $values);
-            $filter->setActive($isChecked);
+                $filter->setStatus($isChecked);
         }
 
         //

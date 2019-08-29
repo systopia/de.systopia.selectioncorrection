@@ -23,9 +23,9 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
     /**
      * @return string The key used for saving the status in the storage.
      */
-    private function getActiveStorageKey ()
+    private function getStatusStorageKey ()
     {
-        return $this->getIdentifier() . '_active';
+        return $this->getIdentifier() . '_status';
     }
 
     /**
@@ -65,9 +65,9 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
      * Set the status of this filter.
      * @param bool $status True for active and false for inactive.
      */
-    public function setActive ($status)
+    public function setStatus ($status)
     {
-        $key = $this->getActiveStorageKey();
+        $key = $this->getStatusStorageKey();
 
         CRM_Selectioncorrection_Storage::set($key, $status);
     }
@@ -75,9 +75,9 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
     /**
      * @return bool True if the filter is active, otherwise false.
      */
-    public function isActive ()
+    public function getStatus ()
     {
-        $key = $this->getActiveStorageKey();
+        $key = $this->getStatusStorageKey();
 
         return CRM_Selectioncorrection_Storage::getWithDefault($key, true);
     }
