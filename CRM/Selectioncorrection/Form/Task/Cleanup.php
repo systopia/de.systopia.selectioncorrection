@@ -78,7 +78,7 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
             'select',
             self::RelationshipTypeElementIdentifier,
             ts('Relationship types for contact persons'),
-            $this->getIndividualOrganisationRelationships(),
+            CRM_Selectioncorrection_Utility_Relationships::getIndividualOrganisationRelationships(),
             true,
             ['multiple' => true]
         );
@@ -100,15 +100,15 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
         $contactIds = $this->_contactIds;
         $relationshipIds = $values[self::RelationshipTypeElementIdentifier];
 
-        $treeData = $this->getOrganisationRelationshipContactPersonTree($contactIds, $relationshipIds);
+        $treeData = CRM_Selectioncorrection_Utility_DataStructures::getOrganisationRelationshipContactPersonTree($contactIds, $relationshipIds);
 
         $contactPersonTree = $treeData['tree'];
         $organisationIds = $treeData['organisationIds'];
         $contactPersonIds = $treeData['contactPersonIds'];
 
-        $organisationNameMapping = $this->getContactDisplayNames($organisationIds);
-        $contactpersonNameMapping = $this->getContactDisplayNames($contactPersonIds);
-        $relationshipLabelMapping = $this->getRelationshipTypeLabels($relationshipIds);
+        $organisationNameMapping = CRM_Selectioncorrection_Utility_Contacts::getContactDisplayNames($organisationIds);
+        $contactpersonNameMapping = CRM_Selectioncorrection_Utility_Contacts::getContactDisplayNames($contactPersonIds);
+        $relationshipLabelMapping = CRM_Selectioncorrection_Utility_Relationships::getRelationshipTypeLabels($relationshipIds);
 
         $organisationsElementList = [];
 
@@ -304,270 +304,5 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Contact_Form_Task
         //    $configuration = $configurations[$selected_config];
         //    $export = new CRM_Xportx_Export($configuration);
         //    $export->writeToStream($this->_contactIds);
-    }
-
-    // TODO: This function should be moved to an utility class.
-    function getIndividualOrganisationRelationships ()
-    {
-        $relationshipMap = [];
-
-        $individualOrganisationRelationships = civicrm_api3(
-            'RelationshipType',
-            'get',
-            [
-                'sequential' => 1,
-                'contact_type_a' => "Individual",
-                'contact_type_b' => "Organization",
-                'return' => [
-                    "id",
-                    "label_a_b"
-                ],
-                'options' => [
-                    'limit' => 0
-                ],
-
-            ]
-        );
-
-        foreach ($individualOrganisationRelationships['values'] as $relationship)
-        {
-            $relationshipMap[$relationship['id']] = $relationship['label_a_b'];
-        }
-
-        $organisationIndividualRelationships = civicrm_api3(
-            'RelationshipType',
-            'get',
-            [
-                'sequential' => 1,
-                'contact_type_a' => "Organization",
-                'contact_type_b' => "Individual",
-                'return' => [
-                    "id",
-                    "label_b_a"
-                ],
-                'options' => [
-                    'limit' => 0
-                ],
-            ]
-        );
-
-        foreach ($organisationIndividualRelationships['values'] as $relationship)
-        {
-            $relationshipMap[$relationship['id']] = $relationship['label_b_a'];
-        }
-
-        return $relationshipMap;
-    }
-
-    function getOrganisationsFromContacts ($contactIds)
-    {
-        $result = civicrm_api3(
-            'Contact',
-            'get',
-            [
-                'sequential' => 1,
-                'return' => [
-                    "id"
-                ],
-                'id' => [
-                    'IN' => $contactIds
-                ],
-                'contact_type' => "Organization",
-                'options' => [
-                    'limit' => 0
-                ],
-            ]
-        );
-
-        $organisationIds = array_map(
-            function ($contact)
-            {
-                return $contact['id'];
-            },
-            $result['values']
-        );
-
-        return $organisationIds;
-    }
-
-    // TODO: This function should be moved to an utility class.
-    /**
-     * Generates a tree of the following structure:
-     *     organisationId -> relationshipTypeId -> contactId
-     * @param string[] $contactIds A list of all contact IDs that shall be used for generating the tree.
-     * @param string[] $relationshipIds A list of all relationship IDs that define a contact person relationship.
-     * @return array Containts three objects: 'tree', 'contactPersonIds' and 'organisationIds'. The two lists have unique values.
-     */
-    function getOrganisationRelationshipContactPersonTree ($contactIds, $relationshipIds)
-    {
-        $organisationIds = $this->getOrganisationsFromContacts($contactIds);
-
-        // Get all contacts from relationships with these organisations:
-        $result = civicrm_api3(
-            'Relationship',
-            'get',
-            [
-                'sequential' => 1,
-                'return' => [
-                    "contact_id_a",
-                    "contact_id_b",
-                    "relationship_type_id"
-                ],
-                'contact_id_a' => [
-                    'IN' => $organisationIds
-                ],
-                'contact_id_b' => [
-                    'IN' => $organisationIds
-                ],
-                'relationship_type_id' => [
-                    'IN' => $relationshipIds
-                ],
-                'is_active' => 1,
-                'options' => [
-                    'limit' => 0,
-                    'or' => [
-                        [
-                            "contact_id_a",
-                            "contact_id_b"
-                        ]
-                    ]
-                ],
-            ]
-        );
-
-        $tree = [];
-
-        // Add the root level to the tree: All organisations.
-        foreach ($organisationIds as $organisationId)
-        {
-            $tree[$organisationId] = [];
-        }
-
-        $contactPersonIds = [];
-
-        // Fill the organisations with their relationships and the relationships
-        // with their contacts by looping through all relationships:
-        foreach ($result['values'] as $relationship)
-        {
-            $relationshipType = $relationship['relationship_type_id'];
-            $contactA = $relationship['contact_id_a'];
-            $contactB = $relationship['contact_id_b'];
-            $organisation = null;
-            $contactPerson = null;
-
-            // We do not know if contact A or contact B is the organisation,
-            // so we check if one of them is a key of the tree's root level.
-            // If this is the case the contact must be the organisation,
-            // otherwise the other contact is it.
-            if (array_key_exists($contactA, $tree))
-            {
-                $organisation = $contactA;
-                $contactPerson = $contactB;
-            }
-            else
-            {
-                $organisation = $contactB;
-                $contactPerson = $contactA;
-            }
-
-            $contactPersonIds[] = $contactPerson;
-
-            // If this relationship type is not present, add it to the tree as node:
-            if (!array_key_exists($relationshipType, $tree[$organisation]))
-            {
-                $tree[$organisation][$relationshipType] = [];
-            }
-
-            // Finally, add the contact person the the tree's leave level:
-            $tree[$organisation][$relationshipType][] = $contactPerson;
-        }
-
-        // Remove duplicate values in the contact persons list:
-        array_keys(array_flip($contactPersonIds));
-
-        $result = [
-            'tree' => $tree,
-            'contactPersonIds' => $contactPersonIds,
-            'organisationIds' => $organisationIds,
-        ];
-
-        return $result;
-    }
-
-    function getContactDisplayNames ($contactIds)
-    {
-        $result = civicrm_api3(
-            'Contact',
-            'get',
-            [
-                'sequential' => 1,
-                'return' => [
-                    "id",
-                    "display_name",
-                ],
-                'id' => [
-                    'IN' => $contactIds
-                ],
-            '   options' => [
-                    'limit' => 0
-                ],
-            ]
-        );
-
-        $contactIdNameMap = [];
-
-        foreach ($result['values'] as $contact)
-        {
-            $contactIdNameMap[$contact['id']] = $contact['display_name'];
-        }
-
-        return $contactIdNameMap;
-    }
-
-    /**
-     * Gets labels for relationship types.
-     * This function factors in if the relationship is Individual->Organisation or Organisation->Individual.
-     */
-    function getRelationshipTypeLabels ($relationshipIds)
-    {
-        $result = civicrm_api3(
-            'RelationshipType',
-            'get',
-            [
-                'sequential' => 1,
-                'return' => [
-                    "id",
-                    "contact_type_a",
-                    "label_a_b",
-                    "label_b_a",
-                ],
-                'id' => [
-                    'IN' => $relationshipIds,
-                ],
-                'options' => [
-                    'limit' => 0
-                ],
-            ]
-        );
-
-        $relationshiptypeIdLabelMap = [];
-
-        foreach ($result['values'] as $relationshipType)
-        {
-            $label = '';
-            // We use the label that descripes the relationship from the individual view:
-            if ($relationshipType['contact_type_a'] == 'Individual')
-            {
-                $label = $relationshipType['label_a_b'];
-            }
-            else
-            {
-                $label = $relationshipType['label_b_a'];
-            }
-
-            $relationshiptypeIdLabelMap[$relationshipType['id']] = $label;
-        }
-
-        return $relationshiptypeIdLabelMap;
     }
 }
