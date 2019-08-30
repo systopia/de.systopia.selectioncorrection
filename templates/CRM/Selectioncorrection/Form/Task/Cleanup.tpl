@@ -12,7 +12,7 @@
 | written permission from the original author(s).        |
 +--------------------------------------------------------*}
 
-{if $current_page == $preselection_page_name}
+{if $current_page == 'preselection'}
   {foreach from=$filter_identifiers item=identifier}
     <div class="crm-section">
       <div class="label">{$form.$identifier.label}</div>
