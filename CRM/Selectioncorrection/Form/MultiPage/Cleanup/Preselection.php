@@ -19,6 +19,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
 {
     private const GroupNameElementIdentifier = 'group_name';
     private const RelationshipTypeElementIdentifier = 'relationship_types';
+    private const FilteredContactsStorageKey = 'filtered_contacts';
 
     protected $name = 'preselection';
 
@@ -117,8 +118,11 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
 
     public function process ()
     {
-        $filters = CRM_Selectioncorrection_FilterHandler::getSingleton()->getFilters();
         $values = $this->pageHandler->getFilteredExportValues();
+
+        $filterHandler = CRM_Selectioncorrection_FilterHandler::getSingleton();
+
+        $filters = $filterHandler->getFilters();
 
         // Set the status for every filter based on the form values:
         foreach ($filters as $filter)
@@ -128,5 +132,12 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
             $isChecked = array_key_exists($identifier, $values);
             $filter->setStatus($isChecked);
         }
+
+        // Perform the filters on the contacts:
+
+        $contactIds = $this->pageHandler->_contactIds;
+        $filteredContactIds = $filterHandler->performFilters($contactIds);
+
+        CRM_Selectioncorrection_Storage::set(self::FilteredContactsStorageKey, $filteredContactIds);
     }
 }
