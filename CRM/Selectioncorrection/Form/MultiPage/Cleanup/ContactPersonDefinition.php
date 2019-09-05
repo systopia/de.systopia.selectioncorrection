@@ -54,6 +54,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
             foreach ($relationships as $relationship => $relationshipContactPersonIds)
             {
                 // Fill a list with contactPersonId => contactPersonLabel:s
+                // TODO: We need a way to include the organisation directly.
                 $contactPersons = [];
                 foreach ($relationshipContactPersonIds as $contactPersonId)
                 {

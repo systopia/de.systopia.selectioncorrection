@@ -216,6 +216,10 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
 
     public function postProcess ()
     {
+        // TODO: This will be called AFTER quickBuildForm. Maybe we should call page->process then
+        //       in quickBuildForm after building the last page but before building the next.
+        //       Because right now the next page's build will know nothing about the last page's process.
+
         parent::postProcess();
 
         $values = $this->getFilteredExportValues();

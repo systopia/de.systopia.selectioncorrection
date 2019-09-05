@@ -127,17 +127,5 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
             $isChecked = array_key_exists($identifier, $values);
             $filter->setStatus($isChecked);
         }
-
-        //    $selected_config = $values['export_configuration'];
-        //    $configurations = CRM_Xportx_Export::getExportConfigurations();
-        //
-        //    if (empty($configurations[$selected_config])) {
-        //      throw new Exception("No configuration found");
-        //    }
-        //
-        //    // run export
-        //    $configuration = $configurations[$selected_config];
-        //    $export = new CRM_Xportx_Export($configuration);
-        //    $export->writeToStream($this->_contactIds);
     }
 }
