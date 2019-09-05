@@ -19,6 +19,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 {
     private const RelationshipTypeElementIdentifier = 'relationship_types';
     private const ElementListStorageKey = 'contact_person_definition_element_identifiers';
+    private const FilteredContactsStorageKey = 'filtered_contacts';
 
     protected $name = 'contact_person_definition';
 
@@ -131,6 +132,18 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
     public function process ()
     {
-        // TODO: Implement.
+        // TODO: There should be a way to include the organisation directly, see build method.
+
+        $elementIdentifiers = CRM_Selectioncorrection_Storage::getWithDefault(self::ElementListStorageKey, []);
+
+        $elementValues = $this->pageHandler->getFilteredExportValues($elementIdentifiers);
+
+        $contactIds = [];
+        foreach ($elementValues as $contacts)
+        {
+            $contactIds = array_merge($contactIds, $contacts);
+        }
+
+        $filteredContactIds = CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters($contactIds);
     }
 }
