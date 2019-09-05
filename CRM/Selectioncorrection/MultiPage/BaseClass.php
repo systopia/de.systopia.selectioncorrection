@@ -90,11 +90,21 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
     }
 
     /**
+     * Returns the export values without internal values and optionally with
+     * a filter that returns only the values which keys are in this list.
+     * @param string[]|null $filter A list of elements that shall be returned.
+     */
+    public function getFilteredExportValues ($filter=null)
+    {
+        return $this->exportValues($filter, true);
+    }
+
+    /**
      * Returns the current page name, meaning the LAST rendered.
      */
     public function currentPageName ()
     {
-        $values = $this->exportValues(null, true);
+        $values = $this->getFilteredExportValues();
 
         return $values[self::LastPageIdentifier];
     }
@@ -205,7 +215,7 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
     {
         parent::postProcess();
 
-        $values = $this->exportValues(null, true);
+        $values = $this->getFilteredExportValues();
 
         $lastPageName = $this->currentPageName();
         $this->pages[$lastPageName]->process($values);

@@ -23,7 +23,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
     public function build (&$defaults)
     {
-        $values = $this->pageHandler->exportValues();
+        $values = $this->pageHandler->getFilteredExportValues();
 
         $contactIds = $this->pageHandler->_contactIds;
         $relationshipIds = $values[self::RelationshipTypeElementIdentifier];

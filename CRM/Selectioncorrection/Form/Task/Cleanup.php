@@ -39,7 +39,7 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
         // TODO: We should forward to the created group here instead of showing the search result again.
         //       -> Group URL: civicrm/group/search?reset=1&force=1&gid=<newGroupId>
 
-        $qfKey = $this->exportValues(null, true)['qfKey'];
+        $qfKey = $this->getFilteredExportValues()['qfKey'];
 
         CRM_Utils_System::redirect(
             CRM_Utils_System::url('civicrm/contact/search', "qfKey=$qfKey")
