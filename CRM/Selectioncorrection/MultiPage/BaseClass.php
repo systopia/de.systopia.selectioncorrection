@@ -207,8 +207,11 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
 
         if (!empty($this->errors))
         {
-            $this->_errors = array_merge($this->_errors, $this->errors);
+            $this->_errors += $this->errors;
         }
+
+        // TODO: Could we use "return parent::validate();" instead?
+        return (count($this->_errors) == 0);
     }
 
     public function postProcess ()
