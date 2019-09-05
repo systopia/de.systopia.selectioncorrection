@@ -56,5 +56,5 @@ abstract class CRM_Selectioncorrection_MultiPage_PageBase
     /**
      * Process function, called to process the data from the form.
      */
-    abstract public function process ($values);
+    abstract public function process ();
 }

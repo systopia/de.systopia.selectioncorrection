@@ -115,9 +115,10 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
         }
     }
 
-    public function process ($values)
+    public function process ()
     {
         $filters = CRM_Selectioncorrection_FilterHandler::getSingleton()->getFilters();
+        $values = $this->pageHandler->getFilteredExportValues();
 
         // Set the status for every filter based on the form values:
         foreach ($filters as $filter)

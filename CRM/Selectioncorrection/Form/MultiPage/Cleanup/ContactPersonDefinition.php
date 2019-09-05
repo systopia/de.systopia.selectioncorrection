@@ -129,7 +129,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         // TODO: Implement.
     }
 
-    public function process ($values)
+    public function process ()
     {
         // TODO: Implement.
     }

@@ -170,10 +170,17 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
 
         if ($lastPageName != $nextPageName)
         {
+            $lastPage = $this->pages[$lastPageName];
+
             // We need the elements of the last page created in PHP (but not rendered in smarty)
             // for the next page to be able to read it's element values.
             // Rebuild does the minimum amount of effort to achieve this.
-            $this->pages[$lastPageName]->rebuild($defaults);
+            $lastPage->rebuild($defaults);
+
+            // We process the last page at this place and not at postProcess because here we can
+            // be sure it is called before the build process of the next page. Otherwise the next
+            // page could not access anything done in the process routine of the last page:
+            $lastPage->process();
         }
 
         // Building of the next page:
@@ -216,15 +223,8 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
 
     public function postProcess ()
     {
-        // TODO: This will be called AFTER quickBuildForm. Maybe we should call page->process then
-        //       in quickBuildForm after building the last page but before building the next.
-        //       Because right now the next page's build will know nothing about the last page's process.
-
         parent::postProcess();
 
-        $values = $this->getFilteredExportValues();
-
-        $lastPageName = $this->currentPageName();
-        $this->pages[$lastPageName]->process($values);
+        // We do not need to do anythin here because we process the pages ourself in the buildQuickForm routine.
     }
 }
