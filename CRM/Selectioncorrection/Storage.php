@@ -74,4 +74,13 @@ class CRM_Selectioncorrection_Storage
     {
         self::$storage->set(self::PREFIX . $key, $value);
     }
+
+    /**
+     * Clears a value from the storage by setting it to null.
+     * @param string $key
+     */
+    public static function clear ($key)
+    {
+        self::set($key, null);
+    }
 }
