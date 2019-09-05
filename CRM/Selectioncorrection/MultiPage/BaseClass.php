@@ -168,12 +168,12 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
             $nextPageName = $lastPageName;
         }
 
-        if (($lastPageName != $nextPageName) && !empty($nextPageName))
+        if ($lastPageName != $nextPageName)
         {
             // We need the elements of the last page created in PHP (but not rendered in smarty)
             // for the next page to be able to read it's element values.
-            // Theoretically it would be "cleaner" if we had dummy elements created everytime.
-            $this->pages[$lastPageName]->build($defaults);
+            // Rebuild does the minimum amount of effort to achieve this.
+            $this->pages[$lastPageName]->rebuild($defaults);
         }
 
         // Building of the next page:

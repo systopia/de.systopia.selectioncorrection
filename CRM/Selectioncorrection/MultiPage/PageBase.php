@@ -20,6 +20,7 @@
 abstract class CRM_Selectioncorrection_MultiPage_PageBase
 {
     // TODO: Find a way to share constants (identifier names) between pages!
+    // TODO: Should we do something with the possibility of naming conflicts between elements in consecutive pages?
 
     protected $name = 'PageBase';
     /**
@@ -37,7 +38,23 @@ abstract class CRM_Selectioncorrection_MultiPage_PageBase
         return $this->name;
     }
 
+    /**
+     * Build function, called to build the quick form.
+     */
     abstract public function build (&$defaults);
+    /**
+     * Rebuld function, called to rebuild the structure of the build (meaning all elements from
+     * build with the same names and types but ideally without filled in data) as fast as possible.
+     * This is needed to allow using the form->exportValues function, which will only result data
+     * from elements that have been created yet...
+     */
+    abstract public function rebuild ();
+    /**
+     * Validate function, called to validate user input from the form.
+     */
     abstract public function validate (&$errors);
+    /**
+     * Process function, called to process the data from the form.
+     */
     abstract public function process ($values);
 }

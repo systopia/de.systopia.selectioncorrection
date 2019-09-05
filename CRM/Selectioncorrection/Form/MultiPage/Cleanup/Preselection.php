@@ -66,6 +66,13 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
         );
     }
 
+    public function rebuild ()
+    {
+        // Build is fast, so we can call it and ignore the defaults.
+        $defaults = [];
+        $this->build($defaults);
+    }
+
     public function validate (&$errors)
     {
         $groupName = $this->pageHandler->_submitValues[self::GroupNameElementIdentifier];

@@ -18,6 +18,7 @@ use CRM_Selectioncorrection_ExtensionUtil as E;
 class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition extends CRM_Selectioncorrection_MultiPage_PageBase
 {
     private const RelationshipTypeElementIdentifier = 'relationship_types';
+    private const ElementListStorageKey = 'contact_person_definition_element_identifiers';
 
     protected $name = 'contact_person_definition';
 
@@ -38,7 +39,14 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         $contactpersonNameMapping = CRM_Selectioncorrection_Utility_Contacts::getContactDisplayNames($contactPersonIds);
         $relationshipLabelMapping = CRM_Selectioncorrection_Utility_Relationships::getRelationshipTypeLabels($relationshipIds);
 
+        /**
+         * @var array $organisationsElementList List of all element lists per organisation.
+         */
         $organisationsElementList = [];
+        /**
+         * @var array $elementList List of all elements.
+         */
+        $elementList = [];
 
         foreach ($contactPersonTree as $organisation => $relationships)
         {
@@ -72,7 +80,11 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
             $organisatioName = $organisationNameMapping[$organisation];
 
             $organisationsElementList[$organisatioName] = $elementIdentifiers;
+            $elementList = array_merge($elementList, $elementIdentifiers);
         }
+
+        // Save the element list in the storage so we can easily rebuild the build structure.
+        CRM_Selectioncorrection_Storage::set(self::ElementListStorageKey, $elementList);
 
         $this->pageHandler->assign('contact_person_definition_organisations_element_list', $organisationsElementList);
 
@@ -90,6 +102,25 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         //$popup_img = CRM_Contact_BAO_Contact_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']);
         //$this->assign("contact_person_org_1434_popup", $popup_img);
         // {$contact_person_org_1434_popup}
+    }
+
+    public function rebuild ()
+    {
+        $elementIdentifiers = CRM_Selectioncorrection_Storage::getWithDefault(self::ElementListStorageKey, []);
+
+        foreach ($elementIdentifiers as $elementIdentifier)
+        {
+            $this->pageHandler->add(
+                'select',
+                $elementIdentifier ,
+                $elementIdentifier,
+                [],
+                false,
+                [
+                    'multiple' => 'multiple',
+                ]
+            );
+        }
     }
 
     public function validate (&$errors)
