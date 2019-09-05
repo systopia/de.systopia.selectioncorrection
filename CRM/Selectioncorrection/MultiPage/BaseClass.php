@@ -51,6 +51,12 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
     protected $errors = [];
 
     /**
+     * Do the forward that is neccessary after the last page has been processed.
+     * This method must be overriden by the child class.
+     */
+    protected abstract function forwardAfterLastPage ();
+
+    /**
      * Adds a page to the page list.
      */
     protected function addPage (CRM_Selectioncorrection_MultiPage_PageBase $page)
@@ -111,7 +117,6 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
         $defaults = [];
 
         // Add an element containing current page identifier:
-        // FIXME: Because of this element, and maybe the smarty and default values the task does not close.
         $this->add(
             'hidden',
             self::LastPageIdentifier
@@ -139,6 +144,11 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
             if ($lastPageName != $this->finalPageName)
             {
                 $nextPageName = $this->nextPages[$lastPageName];
+            }
+            else
+            {
+                // If this was the last page, we need to redirect:
+                $this->forwardAfterLastPage();
             }
         }
 
