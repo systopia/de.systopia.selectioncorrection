@@ -51,10 +51,18 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
     protected $errors = [];
 
     /**
-     * Do the forward that is neccessary after the last page has been processed.
-     * This method must be overriden by the child class.
+     * Do everything needed to initialise the class, especially adding the pages.
+     * This function must be overriden by the child class.
      */
-    protected abstract function forwardAfterLastPage ();
+    protected abstract function initialise ();
+
+    /**
+     * Do something after the last page has been processed.
+     * This function can be overriden by the child class.
+     */
+    protected function doFinalProcess ()
+    {
+    }
 
     /**
      * Adds a page to the page list.
@@ -114,6 +122,8 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
         CRM_Selectioncorrection_Storage::initialise($this);
 
         parent::preProcess();
+
+        $this->initialise();
     }
 
     public function buildQuickForm ()
@@ -155,11 +165,6 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
             {
                 $nextPageName = $this->nextPages[$lastPageName];
             }
-            else
-            {
-                // If this was the last page, we need to redirect:
-                $this->forwardAfterLastPage();
-            }
         }
 
         // If we had errors, show the same page again:
@@ -189,6 +194,11 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
             $this->pages[$nextPageName]->build($defaults);
 
             $this->assign(self::CurrentPageIdentifier, $nextPageName);
+        }
+        else
+        {
+            // If there is no next page, this was the last one and we need to call the final process:
+            $this->doFinalProcess();
         }
 
         $this->setConstants([self::LastPageIdentifier => $nextPageName]);

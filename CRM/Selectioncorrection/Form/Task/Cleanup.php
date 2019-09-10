@@ -22,10 +22,8 @@ use CRM_Selectioncorrection_ExtensionUtil as E;
  */
 class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_MultiPage_BaseClass
 {
-    public function preProcess ()
+    protected function initialise ()
     {
-        parent::preProcess();
-
         $pages = [
             new CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection($this),
             new CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition($this),
@@ -34,7 +32,7 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
         $this->addPages($pages);
     }
 
-    protected function forwardAfterLastPage ()
+    protected function doFinalProcess ()
     {
         // TODO: We should forward to the created group here instead of automatically showing the search result again.
         //       -> Group URL: civicrm/group/search?reset=1&force=1&gid=<newGroupId>
