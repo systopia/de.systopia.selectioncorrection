@@ -25,21 +25,20 @@ class CRM_Selectioncorrection_Utility_Contacts
      */
     static function getOrganisationsFromContacts ($contactIds)
     {
-        $result = civicrm_api3(
+        $contactsOfGivenType = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
             'Contact',
-            'get',
             [
-                'sequential' => 1,
                 'return' => [
-                    "id"
+                    'id'
                 ],
                 'id' => [
                     'IN' => $contactIds
                 ],
-                'contact_type' => "Organization",
-                'options' => [
-                    'limit' => 0
-                ],
+                'contact_type' => $type,
+            ],
+            [
+                $contactIds,
+                $type
             ]
         );
 
@@ -48,7 +47,7 @@ class CRM_Selectioncorrection_Utility_Contacts
             {
                 return $contact['id'];
             },
-            $result['values']
+            $contactsOfGivenType
         );
 
         return $organisationIds;
@@ -61,11 +60,9 @@ class CRM_Selectioncorrection_Utility_Contacts
      */
     static function getContactDisplayNames ($contactIds)
     {
-        $result = civicrm_api3(
+        $result = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
             'Contact',
-            'get',
             [
-                'sequential' => 1,
                 'return' => [
                     "id",
                     "display_name",
@@ -73,15 +70,15 @@ class CRM_Selectioncorrection_Utility_Contacts
                 'id' => [
                     'IN' => $contactIds
                 ],
-            '   options' => [
-                    'limit' => 0
-                ],
+            ],
+            [
+                $contactIds,
             ]
         );
 
         $contactIdNameMap = [];
 
-        foreach ($result['values'] as $contact)
+        foreach ($result as $contact)
         {
             $contactIdNameMap[$contact['id']] = $contact['display_name'];
         }

@@ -28,47 +28,36 @@ class CRM_Selectioncorrection_Utility_Relationships
     {
         $relationshipMap = [];
 
-        $individualOrganisationRelationships = civicrm_api3(
+        $individualOrganisationRelationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValues(
             'RelationshipType',
-            'get',
             [
-                'sequential' => 1,
                 'contact_type_a' => "Individual",
                 'contact_type_b' => "Organization",
                 'return' => [
                     "id",
                     "label_a_b"
                 ],
-                'options' => [
-                    'limit' => 0
-                ],
-
             ]
         );
 
-        foreach ($individualOrganisationRelationships['values'] as $relationship)
+        foreach ($individualOrganisationRelationships as $relationship)
         {
             $relationshipMap[$relationship['id']] = $relationship['label_a_b'];
         }
 
-        $organisationIndividualRelationships = civicrm_api3(
+        $organisationIndividualRelationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValues(
             'RelationshipType',
-            'get',
             [
-                'sequential' => 1,
                 'contact_type_a' => "Organization",
                 'contact_type_b' => "Individual",
                 'return' => [
                     "id",
                     "label_b_a"
                 ],
-                'options' => [
-                    'limit' => 0
-                ],
             ]
         );
 
-        foreach ($organisationIndividualRelationships['values'] as $relationship)
+        foreach ($organisationIndividualRelationships as $relationship)
         {
             $relationshipMap[$relationship['id']] = $relationship['label_b_a'];
         }
@@ -83,30 +72,28 @@ class CRM_Selectioncorrection_Utility_Relationships
      *               the one for the individual-organisation perspective.
     */
     static function getRelationshipTypeLabels ($relationshipIds)
-   {
-       $result = civicrm_api3(
-           'RelationshipType',
-           'get',
-           [
-               'sequential' => 1,
-               'return' => [
-                   "id",
-                   "contact_type_a",
-                   "label_a_b",
-                   "label_b_a",
-               ],
-               'id' => [
-                   'IN' => $relationshipIds,
-               ],
-               'options' => [
-                   'limit' => 0
-               ],
-           ]
-       );
+    {
+        $result = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
+            'RelationshipType',
+            [
+                'return' => [
+                    "id",
+                    "contact_type_a",
+                    "label_a_b",
+                    "label_b_a",
+                ],
+                'id' => [
+                    'IN' => $relationshipIds,
+                ],
+            ],
+            [
+                $relationshipIds
+            ]
+        );
 
        $relationshiptypeIdLabelMap = [];
 
-       foreach ($result['values'] as $relationshipType)
+       foreach ($result as $relationshipType)
        {
            $label = '';
            // We use the label that descripes the relationship from the individual view:

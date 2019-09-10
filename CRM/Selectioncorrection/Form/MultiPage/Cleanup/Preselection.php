@@ -76,25 +76,22 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
     {
         $groupName = $this->pageHandler->_submitValues[self::GroupNameElementIdentifier];
 
-        $foundGroups = civicrm_api3(
+        $foundGroups = CRM_Selectioncorrection_Utility_CivicrmApi::get(
             'Group',
-            'get',
             [
-                'sequential' => 1,
                 'return' => [
-                    "title",
+                    "title"
                 ],
                 'name' => $groupName,
                 'title' => $groupName,
-                'options' => [
-                    'limit' => 1,
-                    'or' => [
-                        [
-                            "name",
-                            "title",
-                        ]
+            ],
+            [
+                'or' => [
+                    [
+                        "name",
+                        "title",
                     ]
-                ],
+                ]
             ]
         );
 

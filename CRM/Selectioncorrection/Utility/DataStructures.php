@@ -30,11 +30,9 @@ class CRM_Selectioncorrection_Utility_DataStructures
         $organisationIds = CRM_Selectioncorrection_Utility_Contacts::getOrganisationsFromContacts($contactIds);
 
         // Get all contacts from relationships with these organisations:
-        $result = civicrm_api3(
+        $result = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
             'Relationship',
-            'get',
             [
-                'sequential' => 1,
                 'return' => [
                     "contact_id_a",
                     "contact_id_b",
@@ -50,15 +48,18 @@ class CRM_Selectioncorrection_Utility_DataStructures
                     'IN' => $relationshipIds
                 ],
                 'is_active' => 1,
-                'options' => [
-                    'limit' => 0,
-                    'or' => [
-                        [
-                            "contact_id_a",
-                            "contact_id_b"
-                        ]
+            ],
+            [
+                $organisationIds,
+                $relationshipIds,
+            ],
+            [
+                'or' => [
+                    [
+                        "contact_id_a",
+                        "contact_id_b"
                     ]
-                ],
+                ]
             ]
         );
 
@@ -74,7 +75,7 @@ class CRM_Selectioncorrection_Utility_DataStructures
 
         // Fill the organisations with their relationships and the relationships
         // with their contacts by looping through all relationships:
-        foreach ($result['values'] as $relationship)
+        foreach ($result as $relationship)
         {
             $relationshipType = $relationship['relationship_type_id'];
             $contactA = $relationship['contact_id_a'];
