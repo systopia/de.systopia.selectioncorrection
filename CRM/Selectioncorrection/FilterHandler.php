@@ -92,6 +92,11 @@ class CRM_Selectioncorrection_FilterHandler
      */
     public function performFilters ($contactIds)
     {
+        if (empty($contactIds))
+        {
+            return [];
+        }
+
         $builder = new GenericBuilder();
 
         $query = $builder->select()->setTable('civicrm_contact')->setColumns(['id']);
@@ -115,10 +120,13 @@ class CRM_Selectioncorrection_FilterHandler
 
         $query = $where->end();
 
-        // Fill the named parameters in the query:
-        //TODO: Maybe we should change this to use the DAO parameters with % instead?
         $sql = $builder->write($query);
         $values = $builder->getValues();
+        // We need to reverse the array for keys with higher numbers are replaced before keys with
+        // smaller ones. This is needed to prevent that ":v20" will be partly replaced with ":v2":
+        $values = array_reverse($values);
+        // Fill the named parameters in the query:
+        //TODO: Maybe we should change this to use the DAO parameters with % instead?
         $sql = str_replace(array_keys($values), array_values($values), $sql);
 
         $queryResult = CRM_Core_DAO::executeQuery($sql);
