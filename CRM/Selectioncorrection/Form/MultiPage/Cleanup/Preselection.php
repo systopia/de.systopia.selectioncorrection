@@ -18,8 +18,6 @@ use CRM_Selectioncorrection_ExtensionUtil as E;
 class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Selectioncorrection_MultiPage_PageBase
 {
     private const GroupNameElementIdentifier = 'group_name';
-    private const RelationshipTypeElementIdentifier = 'relationship_types';
-    private const FilteredContactsStorageKey = 'filtered_contacts';
 
     protected $name = 'preselection';
 
@@ -50,7 +48,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
         // Relationship type for contact persons:
         $this->pageHandler->add(
             'select',
-            self::RelationshipTypeElementIdentifier,
+            CRM_Selectioncorrection_Config::RelationshipTypeElementIdentifier,
             ts('Relationship types for contact persons'),
             CRM_Selectioncorrection_Utility_Relationships::getIndividualOrganisationRelationships(),
             true,
@@ -138,6 +136,6 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
         $contactIds = $this->pageHandler->_contactIds;
         $filteredContactIds = $filterHandler->performFilters($contactIds);
 
-        CRM_Selectioncorrection_Storage::set(self::FilteredContactsStorageKey, $filteredContactIds);
+        CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::FilteredContactsStorageKey, $filteredContactIds);
     }
 }

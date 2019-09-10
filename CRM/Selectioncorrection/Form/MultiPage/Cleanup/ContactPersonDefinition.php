@@ -17,9 +17,7 @@ use CRM_Selectioncorrection_ExtensionUtil as E;
 
 class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition extends CRM_Selectioncorrection_MultiPage_PageBase
 {
-    private const RelationshipTypeElementIdentifier = 'relationship_types';
     private const ElementListStorageKey = 'contact_person_definition_element_identifiers';
-    private const FilteredContactsStorageKey = 'filtered_contacts';
 
     protected $name = 'contact_person_definition';
 
@@ -28,7 +26,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         $values = $this->pageHandler->getFilteredExportValues();
 
         $contactIds = $this->pageHandler->_contactIds;
-        $relationshipIds = $values[self::RelationshipTypeElementIdentifier];
+        $relationshipIds = $values[CRM_Selectioncorrection_Config::RelationshipTypeElementIdentifier];
 
         $treeData = CRM_Selectioncorrection_Utility_DataStructures::getOrganisationRelationshipContactPersonTree($contactIds, $relationshipIds);
 
