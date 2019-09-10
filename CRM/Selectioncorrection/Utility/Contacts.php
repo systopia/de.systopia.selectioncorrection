@@ -19,11 +19,12 @@
 class CRM_Selectioncorrection_Utility_Contacts
 {
     /**
-     * Extracts the organisations from a list of contacts.
+     * Extracts contacts of a given type from a list of IDs.
      * @param string[] $contactIds The list of contact IDs.
-     * @return string[] The list of contact IDs for all given contacts that are organisations.
+     * @param string $type The type of the contacts to find.
+     * @return string[] The list of contact IDs for all given contacts that are of the given type.
      */
-    static function getOrganisationsFromContacts ($contactIds)
+    private static function getContactsWithTypeFromList ($contactIds, $type)
     {
         $contactsOfGivenType = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
             'Contact',
@@ -42,7 +43,8 @@ class CRM_Selectioncorrection_Utility_Contacts
             ]
         );
 
-        $organisationIds = array_map(
+        // Convert the list of API result objects into a list of IDs:
+        $typedIds = array_map(
             function ($contact)
             {
                 return $contact['id'];
@@ -50,7 +52,37 @@ class CRM_Selectioncorrection_Utility_Contacts
             $contactsOfGivenType
         );
 
-        return $organisationIds;
+        return $typedIds;
+    }
+
+    /**
+     * Extracts the individuals from a list of contacts.
+     * @param string[] $contactIds The list of contact IDs.
+     * @return string[] The list of contact IDs for all given contacts that are individuals.
+     */
+    static function getIndividualsFromContacts ($contactIds)
+    {
+        return self::getContactsWithTypeFromList($contactIds, 'Individual');
+    }
+
+    /**
+     * Extracts the organisations from a list of contacts.
+     * @param string[] $contactIds The list of contact IDs.
+     * @return string[] The list of contact IDs for all given contacts that are organisations.
+     */
+    static function getOrganisationsFromContacts ($contactIds)
+    {
+        return self::getContactsWithTypeFromList($contactIds, 'Organization');
+    }
+
+    /**
+     * Extracts the housholds from a list of contacts.
+     * @param string[] $contactIds The list of contact IDs.
+     * @return string[] The list of contact IDs for all given contacts that are housholds.
+     */
+    static function getHousholdsFromContacts ($contactIds)
+    {
+        return self::getContactsWithTypeFromList($contactIds, 'Houshold');
     }
 
     /**
