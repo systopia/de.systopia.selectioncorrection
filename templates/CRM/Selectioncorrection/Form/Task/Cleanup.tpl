@@ -29,7 +29,7 @@
     <div class="label">{$form.group_name.label}</div>
     <div class="content">{$form.group_name.html}</div>
   </div>
-{else}
+{elseif $current_page == 'contact_person_definition'}
   {foreach key=organisation_name item=elements from=$contact_person_definition_organisations_element_list}
     <div class="crm-section">
       {$organisation_name}
@@ -43,6 +43,12 @@
     <div>
     <div class="clear"></div>
   {/foreach}
+  {if not $contact_person_definition_organisations_element_list}
+    <div>
+      {ts}There were no organisations found. Click the button to continue.{/ts}
+      <div class="clear"></div>
+    </div>
+  {/if}
 {/if}
 
 {include file="CRM/common/formButtons.tpl" location="bottom"}
