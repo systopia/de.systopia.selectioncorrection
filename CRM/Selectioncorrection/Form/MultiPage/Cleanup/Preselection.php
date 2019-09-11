@@ -86,6 +86,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
                 'title' => $groupName,
             ],
             [
+                'limit' => 1,
                 'or' => [
                     [
                         "name",

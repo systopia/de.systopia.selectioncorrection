@@ -27,7 +27,7 @@ class CRM_Selectioncorrection_Utility_CivicrmApi
     public static function get ($entity, $additionalParams=[], $additionOptions=[])
     {
         $options = [
-            'limit' => 1,
+            'limit' => 0,
         ];
         if (!empty($additionOptions))
         {
@@ -46,9 +46,7 @@ class CRM_Selectioncorrection_Utility_CivicrmApi
         $result = civicrm_api3(
             $entity,
             'get',
-            [
-                $params,
-            ]
+            $params
         );
 
         return $result;

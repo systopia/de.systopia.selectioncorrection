@@ -235,6 +235,6 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
     {
         parent::postProcess();
 
-        // We do not need to do anythin here because we process the pages ourself in the buildQuickForm routine.
+        // We do not need to do anything here because we process the pages ourself in the buildQuickForm routine.
     }
 }

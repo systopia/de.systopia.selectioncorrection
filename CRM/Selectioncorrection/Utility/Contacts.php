@@ -39,7 +39,6 @@ class CRM_Selectioncorrection_Utility_Contacts
             ],
             [
                 $contactIds,
-                $type
             ]
         );
 
@@ -76,13 +75,13 @@ class CRM_Selectioncorrection_Utility_Contacts
     }
 
     /**
-     * Extracts the housholds from a list of contacts.
+     * Extracts the households from a list of contacts.
      * @param string[] $contactIds The list of contact IDs.
-     * @return string[] The list of contact IDs for all given contacts that are housholds.
+     * @return string[] The list of contact IDs for all given contacts that are households.
      */
-    static function getHousholdsFromContacts ($contactIds)
+    static function getHouseholdsFromContacts ($contactIds)
     {
-        return self::getContactsWithTypeFromList($contactIds, 'Houshold');
+        return self::getContactsWithTypeFromList($contactIds, 'Household');
     }
 
     /**

@@ -40,7 +40,7 @@ class CRM_Selectioncorrection_FilterHandler
     {
         if (self::$singleton === NULL)
         {
-            self::$singleton = new CRM_Selectioncorrection_FilterHandler();
+            self::$singleton = new self();
         }
 
         return self::$singleton;
