@@ -43,11 +43,11 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
 
         $correction = $householdCorrection->removeSinglePersonHouseholds($filteredContacts);
         $filteredContacts = $correction['ids'];
-        $metaData = $correction['metaData'];
+        $correctionMetaData = $correction['metaData'];
 
         $correction = $householdCorrection->addHouseholdsWithMultipleMembersPresent($filteredContacts);
         $filteredContacts = $correction['ids'];
-        $metaData = $correction['metaData'];
+        $correctionMetaData = $correction['metaData'];
 
         $filteredContactPersons = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, []);
         $contactPersonsMetaData = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::ContactPersonsMetaDataStorageKey, []);
