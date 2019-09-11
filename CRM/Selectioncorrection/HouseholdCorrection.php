@@ -62,16 +62,18 @@ class CRM_Selectioncorrection_HouseholdCorrection
      * Removes households from the list where there is only one or less individuals with an active
      * household relationship that complains to the active filters. If the household is removed
      * and there is such an individual that isn't already in the list, it is added.
+     * @return array Contains two arrays: 'ids' and 'metaData'.
      */
     public function removeSinglePersonHouseholds ($contactIds)
     {
         $householdIds = CRM_Selectioncorrection_Utility_Contacts::getHouseholdsFromContacts($contactIds);
 
         // Get all active relationships for the households:
-        $result = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
+        $relationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
             'Relationship',
             [
                 'return' => [
+                    'id',
                     'contact_id_a',
                     'contact_id_b'
                 ],
@@ -89,12 +91,15 @@ class CRM_Selectioncorrection_HouseholdCorrection
             ]
         );
 
-        // From the API result, create lists for all members and a map of members to households:
+        // Meta data is a list of contact ID and relationship ID used in the exporter extension.
+        $metaData = [];
+
+        // From the API result with the relationships, create lists for all members and a map of members to households:
         $allActiveMembers = [];
         $memberHouseholdsMap = [];
-        foreach ($result as $value)
+        foreach ($relationships as $relationship)
         {
-            $contactId = $value['contact_id_a'];
+            $contactId = $relationship['contact_id_a'];
 
             $allActiveMembers[] = $contactId;
 
@@ -102,7 +107,14 @@ class CRM_Selectioncorrection_HouseholdCorrection
             {
                 $memberHouseholdsMap[$contactId] = [];
             }
-            $memberHouseholdsMap[$contactId][] = $value['contact_id_b'];
+            $memberHouseholdsMap[$contactId][] = $relationship['contact_id_b'];
+
+            // Save the meta data:
+            // FIXME: This meta data is incorrect because it includes contacts that will be filtered away in the next step.
+            $metaData[] = [
+                'contact_id' => $contactId,
+                'relationship_id' => $relationship['id'],
+            ];
         }
 
         $filteredMembers = CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters($allActiveMembers);
@@ -148,24 +160,31 @@ class CRM_Selectioncorrection_HouseholdCorrection
         // Finally make every entry unique to prevent duplicate IDs:
         $correctedContactIds = array_unique($correctedContactIds);
 
-        return $correctedContactIds;
+        $result = [
+            'ids' => $correctedContactIds,
+            'metaData' => $metaData,
+        ];
+
+        return $result;
     }
 
     /**
      * If there are multiple individuals in the contact list with an active relationship to the
      * same household, they are removed and the household is added instead.
+     * @return array Contains two arrays: 'ids' and 'metaData'.
      */
     public function addHouseholdsWithMultipleMembersPresent ($contactIds)
     {
         $individualIDs = CRM_Selectioncorrection_Utility_Contacts::getIndividualsFromContacts($contactIds);
 
         // Get all active relationships for the households:
-        $result = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
+        $relationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
             'Relationship',
             [
                 'return' => [
+                    'id',
                     'contact_id_a',
-                    'contact_id_b'
+                    'contact_id_b',
                 ],
                 'relationship_type_id' => [
                     'IN' => $this->householdRelationshipTypeIds
@@ -181,17 +200,28 @@ class CRM_Selectioncorrection_HouseholdCorrection
             ]
         );
 
-        // From the API result, create a map of households to members:
+        // Meta data is a list of contact ID and relationship ID used in the exporter extension.
+        $metaData = [];
+
+        // From the API result with the relationships, create a map of households to members and fill the meta data:
         $householdsMembersMap = [];
-        foreach ($result as $value)
+        foreach ($relationships as $relationship)
         {
-            $householdId = $value['contact_id_b'];
+            $householdId = $relationship['contact_id_b'];
+            $memberId = $relationship['contact_id_a'];
 
             if (!array_key_exists($householdId, $householdsMembersMap))
             {
                 $householdsMembersMap[$householdId] = [];
             }
-            $householdsMembersMap[$householdId][] = $value['contact_id_a'];
+            $householdsMembersMap[$householdId][] = $memberId;
+
+            // Save the meta data:
+            // FIXME: This meta data is incorrect because it includes households that will not be added to the contact list.
+            $metaData[] = [
+                'contact_id' => $householdId,
+                'relationship_id' => $relationship['id'],
+            ];
         }
 
         // Now we can perform the household correction based on the members count for each household:
@@ -218,6 +248,11 @@ class CRM_Selectioncorrection_HouseholdCorrection
         // Finally make every entry unique to prevent duplicate IDs:
         $correctedContactIds = array_unique($correctedContactIds);
 
-        return $correctedContactIds;
+        $result = [
+            'ids' => $correctedContactIds,
+            'metaData' => $metaData,
+        ];
+
+        return $result;
     }
 }

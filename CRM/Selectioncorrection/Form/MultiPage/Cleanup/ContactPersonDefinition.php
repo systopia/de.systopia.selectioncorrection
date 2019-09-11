@@ -18,6 +18,7 @@ use CRM_Selectioncorrection_ExtensionUtil as E;
 class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition extends CRM_Selectioncorrection_MultiPage_PageBase
 {
     private const ElementListStorageKey = 'contact_person_definition_element_identifiers';
+    private const IdentifierContactRelationshipMapStorageKey = 'contact_person_definition_identifier_contact_relationship_map';
 
     protected $name = 'contact_person_definition';
 
@@ -50,14 +51,22 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         foreach ($contactPersonTree as $organisation => $relationships)
         {
             $elementIdentifiers = [];
+            $identifierContactRelationshipMap = [];
+
             foreach ($relationships as $relationship => $relationshipContactPersonIds)
             {
-                // Fill a list with contactPersonId => contactPersonLabel:s
+                // Fill a list with contactPersonId => contactPersonLabel
+                // and one with contactPersonId => relationshipId
                 // TODO: We need a way to include the organisation directly.
-                $contactPersons = [];
-                foreach ($relationshipContactPersonIds as $contactPersonId)
+                $contactpersonsLabelMap = [];
+                $contactpersonRelationshipMap = [];
+                foreach ($relationshipContactPersonIds as $contactPersonData)
                 {
-                    $contactPersons[$contactPersonId] = $contactpersonNameMapping[$contactPersonId];
+                    $contactPersonId = $contactPersonData['contactId'];
+                    $relationshipId = $contactPersonData['relationshipId'];
+
+                    $contactpersonsLabelMap[$contactPersonId] = $contactpersonNameMapping[$contactPersonId];
+                    $contactpersonRelationshipMap[$contactPersonId] = $relationshipId;
                 }
 
                 $elementIdentifier = 'contact_persons_' . $organisation . '_' . $relationship;
@@ -66,7 +75,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
                     'select',
                     $elementIdentifier ,
                     $relationshipLabelMapping[$relationship],
-                    $contactPersons,
+                    $contactpersonsLabelMap,
                     false,
                     [
                         'multiple' => 'multiple',
@@ -75,6 +84,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
                 );
 
                 $elementIdentifiers[] = $elementIdentifier;
+                $identifierContactRelationshipMap[$elementIdentifier] = $contactpersonRelationshipMap;
             }
 
             $organisatioName = $organisationNameMapping[$organisation];
@@ -87,6 +97,9 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         CRM_Selectioncorrection_Storage::set(self::ElementListStorageKey, $elementList);
 
         $this->pageHandler->assign('contact_person_definition_organisations_element_list', $organisationsElementList);
+
+        // Save the identifier contact relationship map in the storage so we can create meta data out of it in the process method later:
+        CRM_Selectioncorrection_Storage::set(self::IdentifierContactRelationshipMapStorageKey, $identifierContactRelationshipMap);
 
         // Contact person definition elements:
         //$contact_person[] = [
@@ -133,17 +146,38 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         // TODO: There should be a way to include the organisation directly, see build method.
 
         $elementIdentifiers = CRM_Selectioncorrection_Storage::getWithDefault(self::ElementListStorageKey, []);
+        $identifierContactRelationshipMap = CRM_Selectioncorrection_Storage::getWithDefault(self::IdentifierContactRelationshipMapStorageKey, []);
 
         $elementValues = $this->pageHandler->getFilteredExportValues($elementIdentifiers);
 
+        // Meta data is a list of contact ID and relationship ID used in the exporter extension.
+        $metaData = [];
+
         $contactIds = [];
-        foreach ($elementValues as $contacts)
+        foreach ($elementValues as $elementIdentifier => $elementContactIds)
         {
-            $contactIds = array_merge($contactIds, $contacts);
+            if (empty($elementContactIds))
+            {
+                continue;
+            }
+
+            $contactIds = array_merge($contactIds, $elementContactIds);
+
+            // Create the meta data for every selected contact:
+            foreach ($elementContactIds as $contactId)
+            {
+                $relationshipId = $identifierContactRelationshipMap[$elementIdentifier][$contactId];
+
+                $metaData[] = [
+                    'contact_id' => $contactId,
+                    'relationship_id' => $relationshipId,
+                ];
+            }
         }
 
         $filteredContactIds = CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters($contactIds);
 
         CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, $filteredContactIds);
+        CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::ContactPersonsMetaDataStorageKey, $metaData);
     }
 }

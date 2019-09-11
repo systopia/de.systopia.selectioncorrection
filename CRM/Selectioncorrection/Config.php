@@ -24,6 +24,7 @@ class CRM_Selectioncorrection_Config
     public const RelationshipTypeElementIdentifier = 'relationship_types';
     public const FilteredContactsStorageKey = 'filtered_contacts';
     public const FilteredContactPersonsStorageKey = 'filtered_contact_persons';
+    public const ContactPersonsMetaDataStorageKey = 'contact_persons_meta_data';
 
     /**
      * @param $name string settigs name

@@ -20,10 +20,10 @@ class CRM_Selectioncorrection_Utility_DataStructures
 {
     /**
      * Generates a tree of the following structure:
-     *     organisationId -> relationshipTypeId -> contactId
+     *     organisationId -> relationshipTypeId -> [contactId, relationshipId]
      * @param string[] $contactIds A list of all contact IDs that shall be used for generating the tree.
      * @param string[] $relationshipIds A list of all relationship IDs that define a contact person relationship.
-     * @return array Containts three objects: 'tree', 'contactPersonIds' and 'organisationIds'. The two lists have unique values.
+     * @return array Containts four objects: 'tree', 'contactPersonIds' and 'organisationIds'. The last two have unique values.
      */
     static function getOrganisationRelationshipContactPersonTree ($contactIds, $relationshipIds)
     {
@@ -34,9 +34,10 @@ class CRM_Selectioncorrection_Utility_DataStructures
             'Relationship',
             [
                 'return' => [
-                    "contact_id_a",
-                    "contact_id_b",
-                    "relationship_type_id"
+                    'id',
+                    'contact_id_a',
+                    'contact_id_b',
+                    'relationship_type_id',
                 ],
                 'contact_id_a' => [
                     'IN' => $organisationIds
@@ -106,8 +107,11 @@ class CRM_Selectioncorrection_Utility_DataStructures
                 $tree[$organisation][$relationshipType] = [];
             }
 
-            // Finally, add the contact person the the tree's leave level:
-            $tree[$organisation][$relationshipType][] = $contactPerson;
+            // Add the contact person and the relationship to the tree's leave level:
+            $tree[$organisation][$relationshipType][] = [
+                'contactId' => $contactPerson,
+                'relationshipId' => $relationship['id'],
+            ];
         }
 
         // Remove duplicate values in the contact persons list:

@@ -38,10 +38,18 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
         //       -> Group URL: civicrm/group/search?reset=1&force=1&gid=<newGroupId>
 
         $filteredContacts = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactsStorageKey, []);
-        $filteredContactPersons = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, []);
 
         $householdCorrection = CRM_Selectioncorrection_HouseholdCorrection::getSingleton();
-        //$filteredContacts = $householdCorrection->removeSinglePersonHouseholds($filteredContacts);
-        $filteredContactsB = $householdCorrection->addHouseholdsWithMultipleMembersPresent($filteredContacts);
+
+        $correction = $householdCorrection->removeSinglePersonHouseholds($filteredContacts);
+        $filteredContacts = $correction['ids'];
+        $metaData = $correction['metaData'];
+
+        $correction = $householdCorrection->addHouseholdsWithMultipleMembersPresent($filteredContacts);
+        $filteredContacts = $correction['ids'];
+        $metaData = $correction['metaData'];
+
+        $filteredContactPersons = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, []);
+        $contactPersonsMetaData = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::ContactPersonsMetaDataStorageKey, []);
     }
 }
