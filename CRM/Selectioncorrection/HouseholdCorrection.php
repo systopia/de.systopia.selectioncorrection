@@ -135,7 +135,7 @@ class CRM_Selectioncorrection_HouseholdCorrection
 
                 if ($memberCount == 1)
                 {
-                    // Add the member to the list if not already present:
+                    // Add the member to the list:
                     $toBeAddedIds[] = $members[0];
                 }
             }
@@ -143,8 +143,9 @@ class CRM_Selectioncorrection_HouseholdCorrection
 
         // Remove the to be deleted IDs from the contact IDs:
         $correctedContactIds = array_diff($contactIds, $toBeDeletedIds);
-
+        // Add the to be added IDs to the corrected contact IDs:
         $correctedContactIds = array_merge($correctedContactIds, $toBeAddedIds);
+        // Finally make every entry unique to prevent duplicate IDs:
         $correctedContactIds = array_unique($correctedContactIds);
 
         return $correctedContactIds;
@@ -154,8 +155,69 @@ class CRM_Selectioncorrection_HouseholdCorrection
      * If there are multiple individuals in the contact list with an active relationship to the
      * same household, they are removed and the household is added instead.
      */
-    public function addHouseholdsWithMultipleMembersPresent ()
+    public function addHouseholdsWithMultipleMembersPresent ($contactIds)
     {
+        $individualIDs = CRM_Selectioncorrection_Utility_Contacts::getIndividualsFromContacts($contactIds);
 
+        // Get all active relationships for the households:
+        $result = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
+            'Relationship',
+            [
+                'return' => [
+                    'contact_id_a',
+                    'contact_id_b'
+                ],
+                'relationship_type_id' => [
+                    'IN' => $this->householdRelationshipTypeIds
+                ],
+                'contact_id_a' => [
+                    'IN' => $individualIDs
+                ],
+                'is_active' => 1,
+            ],
+            [
+                $individualIDs,
+                $this->householdRelationshipTypeIds
+            ]
+        );
+
+        // From the API result, create a map of households to members:
+        $householdsMembersMap = [];
+        foreach ($result as $value)
+        {
+            $householdId = $value['contact_id_b'];
+
+            if (!array_key_exists($householdId, $householdsMembersMap))
+            {
+                $householdsMembersMap[$householdId] = [];
+            }
+            $householdsMembersMap[$householdId][] = $value['contact_id_a'];
+        }
+
+        // Now we can perform the household correction based on the members count for each household:
+        $toBeDeletedIds = [];
+        $toBeAddedIds = [];
+        foreach ($householdsMembersMap as $household => $members)
+        {
+            $memberCount = count($members);
+
+            if ($memberCount > 1)
+            {
+                // Remove the members from the list:
+                $toBeDeletedIds = array_merge($toBeDeletedIds, $members);
+
+                // Add the household to the list:
+                $toBeAddedIds[] = $household;
+            }
+        }
+
+        // Remove the to be deleted IDs from the contact IDs:
+        $correctedContactIds = array_diff($contactIds, $toBeDeletedIds);
+        // Add the to be added IDs to the corrected contact IDs:
+        $correctedContactIds = array_merge($correctedContactIds, $toBeAddedIds);
+        // Finally make every entry unique to prevent duplicate IDs:
+        $correctedContactIds = array_unique($correctedContactIds);
+
+        return $correctedContactIds;
     }
 }
