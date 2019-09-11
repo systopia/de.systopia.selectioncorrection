@@ -143,5 +143,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         }
 
         $filteredContactIds = CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters($contactIds);
+
+        CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, $filteredContactIds);
     }
 }

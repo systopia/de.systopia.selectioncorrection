@@ -36,5 +36,12 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
     {
         // TODO: We should forward to the created group here instead of automatically showing the search result again.
         //       -> Group URL: civicrm/group/search?reset=1&force=1&gid=<newGroupId>
+
+        $filteredContacts = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactsStorageKey, []);
+        $filteredContactPersons = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, []);
+
+        $householdCorrection = CRM_Selectioncorrection_HouseholdCorrection::getSingleton();
+        //$filteredContacts = $householdCorrection->removeSinglePersonHouseholds($filteredContacts);
+        $filteredContactsB = $householdCorrection->addHouseholdsWithMultipleMembersPresent($filteredContacts);
     }
 }
