@@ -19,12 +19,9 @@
 class CRM_Selectioncorrection_Utility_CivicrmApi
 {
     /**
-     * Returns the result of an API get call.
-     * @param string $entity The name of the entity to get.
-     * @param array $additionalParams A list of additional parameters for the API call.
-     * @param array $additionOptions A list of additional options for the API call.
+     * Generic API call abstraction.
      */
-    public static function get ($entity, $additionalParams=[], $additionOptions=[])
+    private static function call ($command, $entity, $additionalParams, $additionOptions)
     {
         $options = [
             'limit' => 0,
@@ -45,11 +42,22 @@ class CRM_Selectioncorrection_Utility_CivicrmApi
 
         $result = civicrm_api3(
             $entity,
-            'get',
+            $command,
             $params
         );
 
         return $result;
+    }
+
+    /**
+     * Returns the result of an API get call.
+     * @param string $entity The name of the entity to get.
+     * @param array $additionalParams A list of additional parameters for the API call.
+     * @param array $additionOptions A list of additional options for the API call.
+     */
+    public static function get ($entity, $additionalParams=[], $additionOptions=[])
+    {
+        return self::call('get', $entity, $additionalParams, $additionOptions);
     }
 
     /**
@@ -83,5 +91,16 @@ class CRM_Selectioncorrection_Utility_CivicrmApi
         }
 
         return self::getValues($entity, $additionalParams, $additionOptions);
+    }
+
+    /**
+     * Returns the result of an API create call.
+     * @param string $entity The name of the entity to create.
+     * @param array $additionalParams A list of additional parameters for the API call.
+     * @param array $additionOptions A list of additional options for the API call.
+     */
+    public static function create ($entity, $additionalParams=[], $additionOptions=[])
+    {
+        return self::call('create', $entity, $additionalParams, $additionOptions);
     }
 }
