@@ -89,8 +89,8 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
                 'limit' => 1,
                 'or' => [
                     [
-                        "name",
-                        "title",
+                        'name',
+                        'title',
                     ]
                 ]
             ]
@@ -130,7 +130,6 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
         }
 
         // Perform the filters on the contacts:
-
         $contactIds = $this->pageHandler->_contactIds;
         $filteredContactIds = $filterHandler->performFilters($contactIds);
 

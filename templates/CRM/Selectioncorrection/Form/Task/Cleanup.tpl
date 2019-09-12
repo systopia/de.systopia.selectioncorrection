@@ -46,8 +46,9 @@
   {if not $contact_person_definition_organisations_element_list}
     <div>
       {ts}There were no organisations found. Click the button to continue.{/ts}
-      <div class="clear"></div>
+      <br>
     </div>
+    <div class="clear"></div>
   {/if}
 {/if}
 

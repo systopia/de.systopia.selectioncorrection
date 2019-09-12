@@ -51,6 +51,7 @@ class CRM_Selectioncorrection_Storage
      * @param mixed $default The default that will be returned if the value is null.
      * @return mixed The value of the stored object or the given default.
      */
+    // TODO: Replace with or add "getOrEmpty" and use it in the code.
     public static function getWithDefault ($key, $default)
     {
         $result = self::$storage->get(self::PREFIX . $key);
