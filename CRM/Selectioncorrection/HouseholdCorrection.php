@@ -62,7 +62,7 @@ class CRM_Selectioncorrection_HouseholdCorrection
      * Removes households from the list where there is only one or less individuals with an active
      * household relationship that complains to the active filters. If the household is removed
      * and there is such an individual that isn't already in the list, it is added.
-     * @return array Contains two arrays: 'ids' and 'metaData'.
+     * @return string[] The list of corrected IDs.
      */
     public function removeSinglePersonHouseholds ($contactIds)
     {
@@ -73,7 +73,6 @@ class CRM_Selectioncorrection_HouseholdCorrection
             'Relationship',
             [
                 'return' => [
-                    'id',
                     'contact_id_a',
                     'contact_id_b'
                 ],
@@ -91,9 +90,6 @@ class CRM_Selectioncorrection_HouseholdCorrection
             ]
         );
 
-        // Meta data is a list of contact ID and relationship ID used in the exporter extension.
-        $metaData = [];
-
         // From the API result with the relationships, create lists for all members and a map of members to households:
         $allActiveMembers = [];
         $memberHouseholdsMap = [];
@@ -108,13 +104,6 @@ class CRM_Selectioncorrection_HouseholdCorrection
                 $memberHouseholdsMap[$contactId] = [];
             }
             $memberHouseholdsMap[$contactId][] = $relationship['contact_id_b'];
-
-            // Save the meta data:
-            // FIXME: This meta data is incorrect because it includes contacts that will be filtered away in the next step.
-            $metaData[] = [
-                'contact_id' => $contactId,
-                'relationship_id' => $relationship['id'],
-            ];
         }
 
         $filteredMembers = CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters($allActiveMembers);
@@ -160,18 +149,13 @@ class CRM_Selectioncorrection_HouseholdCorrection
         // Finally make every entry unique to prevent duplicate IDs:
         $correctedContactIds = array_unique($correctedContactIds);
 
-        $result = [
-            'ids' => $correctedContactIds,
-            'metaData' => $metaData,
-        ];
-
-        return $result;
+        return $correctedContactIds;
     }
 
     /**
      * If there are multiple individuals in the contact list with an active relationship to the
      * same household, they are removed and the household is added instead.
-     * @return array Contains two arrays: 'ids' and 'metaData'.
+     * @return string[] The list of corrected IDs.
      */
     public function addHouseholdsWithMultipleMembersPresent ($contactIds)
     {
@@ -182,7 +166,6 @@ class CRM_Selectioncorrection_HouseholdCorrection
             'Relationship',
             [
                 'return' => [
-                    'id',
                     'contact_id_a',
                     'contact_id_b',
                 ],
@@ -200,9 +183,6 @@ class CRM_Selectioncorrection_HouseholdCorrection
             ]
         );
 
-        // Meta data is a list of contact ID and relationship ID used in the exporter extension.
-        $metaData = [];
-
         // From the API result with the relationships, create a map of households to members and fill the meta data:
         $householdsMembersMap = [];
         foreach ($relationships as $relationship)
@@ -215,13 +195,6 @@ class CRM_Selectioncorrection_HouseholdCorrection
                 $householdsMembersMap[$householdId] = [];
             }
             $householdsMembersMap[$householdId][] = $memberId;
-
-            // Save the meta data:
-            // FIXME: This meta data is incorrect because it includes households that will not be added to the contact list.
-            $metaData[] = [
-                'contact_id' => $householdId,
-                'relationship_id' => $relationship['id'],
-            ];
         }
 
         // Now we can perform the household correction based on the members count for each household:
@@ -248,11 +221,6 @@ class CRM_Selectioncorrection_HouseholdCorrection
         // Finally make every entry unique to prevent duplicate IDs:
         $correctedContactIds = array_unique($correctedContactIds);
 
-        $result = [
-            'ids' => $correctedContactIds,
-            'metaData' => $metaData,
-        ];
-
-        return $result;
+        return $correctedContactIds;
     }
 }
