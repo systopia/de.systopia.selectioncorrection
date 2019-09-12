@@ -48,10 +48,14 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
          */
         $elementList = [];
 
+        /**
+         * @var array $identifierContactRelationshipMap A map for connecting identifiers and contacts to relationships.
+         */
+        $identifierContactRelationshipMap = [];
+
         foreach ($contactPersonTree as $organisation => $relationships)
         {
             $elementIdentifiers = [];
-            $identifierContactRelationshipMap = [];
 
             foreach ($relationships as $relationship => $relationshipContactPersonIds)
             {
@@ -150,10 +154,8 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
         $elementValues = $this->pageHandler->getFilteredExportValues($elementIdentifiers);
 
-        // Meta data is a list of contact ID and relationship ID used in the exporter extension.
-        $metaData = [];
-
         $contactIds = [];
+        $contactRelationshipsMap = [];
         foreach ($elementValues as $elementIdentifier => $elementContactIds)
         {
             if (empty($elementContactIds))
@@ -163,11 +165,32 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
             $contactIds = array_merge($contactIds, $elementContactIds);
 
-            // Create the meta data for every selected contact:
+            // We will need a contact relationships map later for creating the meta data for the filtered contacts:
             foreach ($elementContactIds as $contactId)
             {
                 $relationshipId = $identifierContactRelationshipMap[$elementIdentifier][$contactId];
 
+                if (!array_key_exists($contactId, $contactRelationshipsMap))
+                {
+                    $contactRelationshipsMap[$contactId] = [];
+                }
+
+                $contactRelationshipsMap[$contactId][] = $relationshipId;
+            }
+        }
+
+        // Make the IDs unique to prevent duplicates:
+        $contactIds = array_unique($contactIds);
+
+        $filteredContactIds = CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters($contactIds);
+        CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, $filteredContactIds);
+
+        // Create the meta data for every filtered selected contact's relationships:
+        $metaData = [];
+        foreach ($filteredContactIds as $contactId)
+        {
+            foreach ($contactRelationshipsMap[$contactId] as $relationshipId)
+            {
                 $metaData[] = [
                     'contact_id' => $contactId,
                     'relationship_id' => $relationshipId,
@@ -175,9 +198,6 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
             }
         }
 
-        $filteredContactIds = CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters($contactIds);
-
-        CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, $filteredContactIds);
         CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::ContactPersonsMetaDataStorageKey, $metaData);
     }
 }
