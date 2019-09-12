@@ -45,18 +45,25 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
         $metaData = new CRM_Selectioncorrection_MetaData();
 
         $filteredContacts = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactsStorageKey, []);
+        $householdContacts = CRM_Selectioncorrection_Utility_Contacts::getHouseholdsFromContacts($filteredContacts);
+        $individualContacts = CRM_Selectioncorrection_Utility_Contacts::getIndividualsFromContacts($filteredContacts);
 
         $householdCorrection = CRM_Selectioncorrection_HouseholdCorrection::getSingleton();
 
-        $correction = $householdCorrection->removeSinglePersonHouseholds($filteredContacts);
-        $filteredContacts = $correction['ids'];
-        $correctionMetaData = $correction['metaData'];
+        $correctedContacts = $householdCorrection->removeSinglePersonHouseholds($householdContacts);
+        $group->add($correctedContacts);
 
-        $correction = $householdCorrection->addHouseholdsWithMultipleMembersPresent($filteredContacts);
-        $filteredContacts = $correction['ids'];
-        $correctionMetaData = $correction['metaData'];
+        $correctedContacts = $householdCorrection->addHouseholdsWithMultipleMembersPresent($individualContacts);
+        $group->add($correctedContacts);
 
         $filteredContactPersons = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, []);
         $contactPersonsMetaData = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::ContactPersonsMetaDataStorageKey, []);
+
+        $group->add($filteredContactPersons);
+        $metaData->add($contactPersonsMetaData);
+
+        $group->save();
+        $metaData->setGroupId($group->getGroupId());
+        $metaData->save();
     }
 }
