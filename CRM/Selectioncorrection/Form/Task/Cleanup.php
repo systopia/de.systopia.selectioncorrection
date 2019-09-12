@@ -37,6 +37,10 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
         // TODO: We should forward to the created group here instead of automatically showing the search result again.
         //       -> Group URL: civicrm/group/search?reset=1&force=1&gid=<newGroupId>
 
+        $groupTitle = CRM_Selectioncorrection_Storage::get(CRM_Selectioncorrection_Config::GroupTitleStorageKey);
+
+        $group = new CRM_Selectioncorrection_Group();
+        $group->setGroupTitle($groupTitle);
         $filteredContacts = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactsStorageKey, []);
 
         $householdCorrection = CRM_Selectioncorrection_HouseholdCorrection::getSingleton();

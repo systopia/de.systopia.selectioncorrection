@@ -135,5 +135,8 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
         $filteredContactIds = $filterHandler->performFilters($contactIds);
 
         CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::FilteredContactsStorageKey, $filteredContactIds);
+
+        // Save the group title:
+        CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::GroupTitleStorageKey, $values[self::GroupTitleElementIdentifier]);
     }
 }

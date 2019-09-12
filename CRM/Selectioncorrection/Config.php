@@ -22,6 +22,7 @@ class CRM_Selectioncorrection_Config
 {
     // Public constants used for global access:
     public const RelationshipTypeElementIdentifier = 'relationship_types';
+    public const GroupTitleStorageKey = 'group_title';
     public const FilteredContactsStorageKey = 'filtered_contacts';
     public const FilteredContactPersonsStorageKey = 'filtered_contact_persons';
     public const ContactPersonsMetaDataStorageKey = 'contact_persons_meta_data';
