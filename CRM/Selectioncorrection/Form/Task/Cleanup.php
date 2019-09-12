@@ -41,6 +41,9 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
 
         $group = new CRM_Selectioncorrection_Group();
         $group->setGroupTitle($groupTitle);
+
+        $metaData = new CRM_Selectioncorrection_MetaData();
+
         $filteredContacts = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactsStorageKey, []);
 
         $householdCorrection = CRM_Selectioncorrection_HouseholdCorrection::getSingleton();

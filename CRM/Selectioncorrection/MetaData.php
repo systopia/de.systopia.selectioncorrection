@@ -13,25 +13,102 @@
 | written permission from the original author(s).        |
 +--------------------------------------------------------*/
 
+use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
+
 /**
  * Handles meta data logic like adding contacts to it and save them in the database.
+ * Meta data is a list of contact ID and relationship ID used in the exporter extension.
  */
 class CRM_Selectioncorrection_MetaData
 {
-    private $list = [];
+    private const TableName = 'civicrm_group_contact_metadata';
 
-    function __construct ()
+    private $list = [];
+    private $groupId = null;
+
+    public function __construct ()
     {
         // TODO: Do we need to do something here?
     }
 
-    function add ($metaDataList)
+    private function createTableIfNeeded ($tableName)
+    {
+        // TODO: This should be done as an extension upgrade/initialisation procedure.
+
+        if (!CRM_Core_DAO::checkTableExists(self::TableName))
+        {
+            $query = 'CREATE TABLE ' . self::TableName . ' (' .
+                     "id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                      group_id INT UNSIGNED NOT NULL,
+                      contact_id INT UNSIGNED NOT NULL,
+                      relationship_id INT UNSIGNED NOT NULL)";
+
+            // FIXME: Exception handling?
+            CRM_Core_DAO::executeQuery($query);
+        }
+    }
+
+    public function setGroupId ($groupId)
+    {
+        if ($groupId === null)
+        {
+            throw new InvalidArgumentException('Group id must not be null.');
+        }
+
+        $this->groupId = $groupId;
+    }
+
+    /**
+     * Add a list of meta data.
+     * Attention: This is an in-memory action. You need to call "save" to save them permanently in the table.
+     */
+    public function add ($metaDataList)
     {
         $this->list = array_merge($this->list, $metaDataList);
     }
 
-    function save ()
+    /**
+     * Save the meta data list permanently to the table.
+     */
+    public function save ()
     {
-        // TODO: Implement.
+        $this->createTableIfNeeded(self::TableName);
+
+        if ($this->groupId === null)
+        {
+            throw new InvalidArgumentException('Group id is not set.');
+        }
+
+        // In the following, we build the query once and fill it with dummy data:
+
+        $builder = new GenericBuilder();
+
+        $query = $builder->insert()->setTable(self::TableName);
+
+        $query = $query->setValues(
+            [
+                /* %1 */ 'group_id' => $this->groupId,
+                /* %2 */ 'contact_id' => 'contact_id_dummy',
+                /* %3 */ 'relationship_id' => 'relationship_id_dummy',
+            ]
+        );
+
+        $sql = $builder->write($query);
+        $sql = CRM_Selectioncorrection_Utility_QueryBuilder::convertBuilderStatementToCiviStatement($sql);
+
+        $values = $builder->getValues();
+        $values = CRM_Selectioncorrection_Utility_QueryBuilder::convertBuilderValuesToCiviValues($values);
+
+        // After that, we execute the query with the values of every meta data we have:
+        foreach ($this->list as $metaData)
+        {
+            // The following is a small hack. We keep the values with their keys and types set and only
+            // change the real value of it to the current meta data. Then we can pass it again to DAO:
+            $values[2][0] = $metaData['contact_id'];
+            $values[3][0] = $metaData['relationship_id'];
+
+            // FIXME: Exception handling?
+            CRM_Core_DAO::executeQuery($sql, $values);
+        }
     }
 }
