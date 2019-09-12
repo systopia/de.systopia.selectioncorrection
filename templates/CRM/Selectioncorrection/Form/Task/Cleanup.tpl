@@ -26,8 +26,8 @@
   </div>
   <div class="clear"></div>
   <div class="crm-section">
-    <div class="label">{$form.group_name.label}</div>
-    <div class="content">{$form.group_name.html}</div>
+    <div class="label">{$form.group_title.label}</div>
+    <div class="content">{$form.group_title.html}</div>
   </div>
 {elseif $current_page == 'contact_person_definition'}
   {foreach key=organisation_name item=elements from=$contact_person_definition_organisations_element_list}

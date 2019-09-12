@@ -17,7 +17,7 @@ use CRM_Selectioncorrection_ExtensionUtil as E;
 
 class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Selectioncorrection_MultiPage_PageBase
 {
-    private const GroupNameElementIdentifier = 'group_name';
+    private const GroupTitleElementIdentifier = 'group_title';
 
     protected $name = 'preselection';
 
@@ -55,11 +55,11 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
             ['multiple' => true]
         );
 
-        // Name for the target group to create:
+        // Title for the target group to create:
         $this->pageHandler->add(
             'text',
-            self::GroupNameElementIdentifier,
-            ts('Group name'),
+            self::GroupTitleElementIdentifier,
+            ts('Group title'),
             null,
             true
         );
@@ -74,7 +74,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
 
     public function validate (&$errors)
     {
-        $groupName = $this->pageHandler->_submitValues[self::GroupNameElementIdentifier];
+        $groupTitle = $this->pageHandler->_submitValues[self::GroupTitleElementIdentifier];
 
         $foundGroups = CRM_Selectioncorrection_Utility_CivicrmApi::get(
             'Group',
@@ -82,8 +82,8 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
                 'return' => [
                     "title"
                 ],
-                'name' => $groupName,
-                'title' => $groupName,
+                'name' => $groupTitle,
+                'title' => $groupTitle,
             ],
             [
                 'limit' => 1,
@@ -99,10 +99,10 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
         if ($foundGroups['count'] > 0)
         {
             $existingGroupTitle = $foundGroups['values'][0]['title'];
-            $errorValues = [1 => $groupName, 2 => $existingGroupTitle];
+            $errorValues = [1 => $groupTitle, 2 => $existingGroupTitle];
             $errorMessage = E::ts("A group with '%1' as name or title already exists. Have a look at group '%2'.", $errorValues);
 
-            $errors[self::GroupNameElementIdentifier] = $errorMessage;
+            $errors[self::GroupTitleElementIdentifier] = $errorMessage;
 
             return false;
         }
