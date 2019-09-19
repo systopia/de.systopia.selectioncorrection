@@ -31,7 +31,12 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
      */
     private $pages = [];
     /**
-     * Containts the pages that follow the page.
+     * Maps a page name to the name of the page comming before it.
+     * @var string[] $previousPages "pageName" => "previous pageName"
+     */
+    private $previousPages = [];
+    /**
+     * Maps a page name to the name of the page comming after it.
      * @var string[] $nextPages "pageName" => "next pageName"
      */
     private $nextPages = [];
@@ -57,7 +62,7 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
     protected abstract function initialise ();
 
     /**
-     * Do something after the last page has been processed.
+     * Do something after the final page has been processed.
      * This function can be overriden by the child class.
      */
     protected function doFinalProcess ()
@@ -71,8 +76,6 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
     {
         $pageName = $page->getName();
 
-        $this->pages[$pageName] = $page;
-
         if (empty($this->firstPageName))
         {
             $this->firstPageName = $pageName;
@@ -80,8 +83,11 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
 
         if (!empty($this->finalPageName))
         {
+            $this->previousPages[$pageName] = $this->finalPageName;
             $this->nextPages[$this->finalPageName] = $pageName;
         }
+
+        $this->pages[$pageName] = $page;
 
         $this->finalPageName = $pageName;
     }
@@ -101,16 +107,37 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
      * Returns the export values without internal values and optionally with
      * a filter that returns only the values which keys are in this list.
      * @param string[]|null $filter A list of elements that shall be returned.
+     * @param bool $removeCiviValues If true, Civi values like qfKey and entryURL will be removed from the values list.
+     * @return array The filtered values.
      */
-    public function getFilteredExportValues ($filter=null)
+    protected function getFilteredExportValues ($filter=null, $removeCiviValues=true)
     {
-        return $this->exportValues($filter, true);
+        $values = $this->exportValues($filter, true);
+
+        if ($removeCiviValues)
+        {
+            unset($values['qfKey']);
+            unset($values['entryURL']);
+        }
+
+        return $values;
     }
 
     /**
-     * Returns the current page name, meaning the LAST rendered.
+     * Returns the values for a given page.
+     * @param string $pageName The name of the page.
+     * @return array The page values. Empty if there are none found.
      */
-    public function currentPageName ()
+    public function getPageValues ($pageName)
+    {
+        return CRM_Selectioncorrection_Storage::getWithDefault($pageName . '_values', []);
+    }
+
+    /**
+     * Returns the name of last rendered and shown page name.
+     * @return string
+     */
+    public function getLastPageName ()
     {
         $values = $this->getFilteredExportValues();
 
@@ -142,12 +169,12 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
             self::LastPageIdentifier
         );
 
-        $lastPageName = $this->currentPageName();
+        $lastPageName = $this->getLastPageName();
         $nextPageName = '';
 
         if (empty($lastPageName))
         {
-            // If thee last page name is empty, we want to show the first page.
+            // If the last page name is empty, we want to show the first page.
             // For this we have to set the next page name to the first page name:
             $nextPageName = $this->firstPageName;
             // But in addition we have to set the last page to the first page, too,
@@ -167,13 +194,7 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
             }
         }
 
-        // If we had errors, show the same page again:
-        if (!empty($this->errors))
-        {
-            $nextPageName = $lastPageName;
-        }
-
-        if ($lastPageName != $nextPageName)
+        if ($nextPageName != $this->firstPageName)
         {
             $lastPage = $this->pages[$lastPageName];
 
@@ -182,10 +203,39 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
             // Rebuild does the minimum amount of effort to achieve this.
             $lastPage->rebuild($defaults);
 
-            // We process the last page at this place and not at postProcess because here we can
-            // be sure it is called before the build process of the next page. Otherwise the next
-            // page could not access anything done in the process routine of the last page:
-            $lastPage->process();
+            // We can only check for errors after the page has been rebuild...
+            $noErrorsFound = $this->validate();
+            if (!$noErrorsFound)
+            {
+                // If there were any errors in the core function found, like a required field with
+                // no value, we roll back and set the pages to the previous state.
+                // The previous page of the last one has to be rebuild and the last page, rebuild
+                // seconds ago, will be fully build afterwards, overriding the "dummy" elements in
+                // the rebuild function.
+
+                $nextPageName = $lastPageName;
+
+                if ($lastPageName != $this->firstPageName)
+                {
+                    $lastPageName = $this->previousPages[$lastPageName];
+
+                    $lastPage = $this->pages[$lastPageName];
+
+                    $lastPage->rebuild($defaults);
+                }
+            }
+            else if (($lastPageName == $this->finalPageName) || ($lastPageName == $this->previousPages[$nextPageName]))
+            {
+                // Only process the last page if there has been no errors and it really is the previous page for the next one or the final one.
+
+                // For later access, we save the values for this page in the storage:
+                CRM_Selectioncorrection_Storage::set($lastPageName . '_values', $this->getFilteredExportValues());
+
+                // We process the last page at this place and not at postProcess because here we can
+                // be sure it is called before the build process of the next page. Otherwise the next
+                // page could not access anything done in the process routine of the last page:
+                $lastPage->process();
+            }
         }
 
         // Building of the next page:
@@ -220,15 +270,18 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
 
     public function validate ()
     {
-        parent::validate();
+        // FIXME: Leere Gruppe abfangen.
+        //        Bzw. den Fehler finden, weshalb trotz fehlender Eingabe die Seite gewechselt hat...
+        //        Könnte es reichen, "parent::validate()" auszuwerten?
+
+        $noParentError = parent::validate();
 
         if (!empty($this->errors))
         {
             $this->_errors += $this->errors;
         }
 
-        // TODO: Could we use "return parent::validate();" instead?
-        return (count($this->_errors) == 0);
+        return $noParentError && (count($this->_errors) == 0);
     }
 
     public function postProcess ()

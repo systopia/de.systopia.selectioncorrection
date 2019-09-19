@@ -20,11 +20,12 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
     private const ElementListStorageKey = 'contact_person_definition_element_identifiers';
     private const IdentifierContactRelationshipMapStorageKey = 'contact_person_definition_identifier_contact_relationship_map';
 
-    protected $name = 'contact_person_definition';
+    public const PageName = 'contact_person_definition';
+    protected $name = self::PageName;
 
     public function build (&$defaults)
     {
-        $values = $this->pageHandler->getFilteredExportValues();
+        $values = $this->pageHandler->getPageValues(CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection::PageName);
 
         $contactIds = $this->pageHandler->_contactIds;
         $relationshipIds = $values[CRM_Selectioncorrection_Config::RelationshipTypeElementIdentifier];
@@ -152,7 +153,12 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         $elementIdentifiers = CRM_Selectioncorrection_Storage::getWithDefault(self::ElementListStorageKey, []);
         $identifierContactRelationshipMap = CRM_Selectioncorrection_Storage::getWithDefault(self::IdentifierContactRelationshipMapStorageKey, []);
 
-        $elementValues = $this->pageHandler->getFilteredExportValues($elementIdentifiers);
+        $pageValues = $this->pageHandler->getPageValues($this->name);
+        // The following isn't that complicating:
+        // "array_intersect_key" gives back all entries in the first given array which keys are also present in the second given array,
+        // "array_flip" flips keys and values of an array, which is needed because "elementIdentifiers" is a list of identifiers, which
+        // are the keys in "pageValues".
+        $elementValues = array_intersect_key($pageValues, array_flip($elementIdentifiers));
 
         $contactIds = [];
         $contactRelationshipsMap = [];

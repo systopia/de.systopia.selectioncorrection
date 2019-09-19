@@ -19,7 +19,8 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
 {
     private const GroupTitleElementIdentifier = 'group_title';
 
-    protected $name = 'preselection';
+    public const PageName = 'preselection';
+    protected $name = self::PageName;
 
     public function build (&$defaults)
     {
@@ -114,7 +115,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
 
     public function process ()
     {
-        $values = $this->pageHandler->getFilteredExportValues();
+        $values = $this->pageHandler->getPageValues($this->name);
 
         $filterHandler = CRM_Selectioncorrection_FilterHandler::getSingleton();
 
