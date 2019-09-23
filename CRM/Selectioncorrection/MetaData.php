@@ -31,23 +31,6 @@ class CRM_Selectioncorrection_MetaData
         // TODO: Do we need to do something here?
     }
 
-    private function createTableIfNeeded ($tableName)
-    {
-        // TODO: This should be done as an extension upgrade/initialisation procedure.
-
-        if (!CRM_Core_DAO::checkTableExists(self::TableName))
-        {
-            $query = 'CREATE TABLE ' . self::TableName . ' (' .
-                     "id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                      group_id INT UNSIGNED NOT NULL,
-                      contact_id INT UNSIGNED NOT NULL,
-                      relationship_id INT UNSIGNED NOT NULL)";
-
-            // FIXME: Exception handling?
-            CRM_Core_DAO::executeQuery($query);
-        }
-    }
-
     public function setGroupId ($groupId)
     {
         if ($groupId === null)
@@ -72,8 +55,6 @@ class CRM_Selectioncorrection_MetaData
      */
     public function save ()
     {
-        $this->createTableIfNeeded(self::TableName);
-
         if ($this->groupId === null)
         {
             throw new InvalidArgumentException('Group id is not set.');

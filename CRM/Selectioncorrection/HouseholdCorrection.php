@@ -15,10 +15,6 @@
 
 class CRM_Selectioncorrection_HouseholdCorrection
 {
-    // TODO: We need the relationship types for households. So this class must become a singleton.
-    //       In it's init function we search for all relationship types with a household as second contact
-    //       per API and save them in here.
-
     private static $singleton = NULL;
 
     /**

@@ -270,10 +270,6 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
 
     public function validate ()
     {
-        // FIXME: Leere Gruppe abfangen.
-        //        Bzw. den Fehler finden, weshalb trotz fehlender Eingabe die Seite gewechselt hat...
-        //        Könnte es reichen, "parent::validate()" auszuwerten?
-
         $noParentError = parent::validate();
 
         if (!empty($this->errors))
