@@ -30,20 +30,15 @@
     <div class="content">{$form.group_title.html}</div>
   </div>
 {elseif $current_page == 'contact_person_definition'}
-  {foreach key=organisation_name item=elements from=$contact_person_definition_organisations_element_list}
-    <div class="crm-section">
-      {$organisation_name}
-      {foreach from=$elements item=identifier}
-        <div class="crm-section">
-          <div class="label">{$form.$identifier.label}</div>
-          <div class="content">{$form.$identifier.html}</div>
-          <div class="clear"></div>
-        </div>
-      {/foreach}
-    <div>
-    <div class="clear"></div>
-  {/foreach}
-  {if not $contact_person_definition_organisations_element_list}
+  {if $contact_person_definition_element_organisation_map}
+    {foreach key=element_identifier item=organisation_id from=$contact_person_definition_element_organisation_map}
+      <div class="crm-section">
+        <div class="label">{$form.$element_identifier.label}</div>
+        <div class="content">{$form.$element_identifier.html}</div>
+        <div class="clear"></div>
+      </div>
+    {/foreach}
+  {else}
     <div>
       {ts}There were no organisations found. Click the button to continue.{/ts}
       <br>

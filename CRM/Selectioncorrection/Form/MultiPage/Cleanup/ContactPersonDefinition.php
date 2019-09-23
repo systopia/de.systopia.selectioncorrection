@@ -17,8 +17,9 @@ use CRM_Selectioncorrection_ExtensionUtil as E;
 
 class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition extends CRM_Selectioncorrection_MultiPage_PageBase
 {
-    private const ElementListStorageKey = 'contact_person_definition_element_identifiers';
-    private const IdentifierContactRelationshipMapStorageKey = 'contact_person_definition_identifier_contact_relationship_map';
+    private const OptionIdToContactPersonDataMapStorageKey = 'contact_person_definition_option_id_to_contact_person_data_map';
+    private const ElementOrganisationMap = 'contact_person_definition_element_organisation_map';
+    private const IncludeOrganisationDirectlyIndex = 0;
 
     public const PageName = 'contact_person_definition';
     protected $name = self::PageName;
@@ -27,8 +28,8 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
     {
         $values = $this->pageHandler->getPageValues(CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection::PageName);
 
-        $contactIds = $this->pageHandler->_contactIds;
         $relationshipIds = $values[CRM_Selectioncorrection_Config::RelationshipTypeElementIdentifier];
+        $contactIds = $this->pageHandler->_contactIds;
 
         $treeData = CRM_Selectioncorrection_Utility_DataStructures::getOrganisationRelationshipContactPersonTree($contactIds, $relationshipIds);
 
@@ -41,70 +42,68 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         $relationshipLabelMapping = CRM_Selectioncorrection_Utility_Relationships::getRelationshipTypeLabels($relationshipIds);
 
         /**
-         * @var array $organisationsElementList List of all element lists per organisation.
+         * @var $idDataMap Maps option value IDs to the contact person data needed for processing.
+         *                 A specific index is used to indicate that the organisation itself shall be included.
          */
-        $organisationsElementList = [];
-        /**
-         * @var array $elementList List of all elements.
-         */
-        $elementList = [];
+        $idDataMap = [self::IncludeOrganisationDirectlyIndex => E::ts('direct')];
 
         /**
-         * @var array $identifierContactRelationshipMap A map for connecting identifiers and contacts to relationships.
+         * @var array $elementOrganisationMap Maps an element identifier to an organisation.
          */
-        $identifierContactRelationshipMap = [];
+        $elementOrganisationMap = [];
 
-        foreach ($contactPersonTree as $organisation => $relationships)
+        foreach ($contactPersonTree as $organisation => $relationshipTypes)
         {
-            $elementIdentifiers = [];
+            /**
+             * @var $idLabelMap A map of option value IDs to labels, used by the select element.
+             */
+            $idLabelMap = [self::IncludeOrganisationDirectlyIndex => $idDataMap[self::IncludeOrganisationDirectlyIndex]];
 
-            foreach ($relationships as $relationship => $relationshipContactPersonIds)
+            foreach ($relationshipTypes as $relationshipType => $contactPersons)
             {
-                // Fill a list with contactPersonId => contactPersonLabel
-                // and one with contactPersonId => relationshipId
-                // TODO: We need a way to include the organisation directly.
-                $contactpersonsLabelMap = [];
-                $contactpersonRelationshipMap = [];
-                foreach ($relationshipContactPersonIds as $contactPersonData)
+                foreach ($contactPersons as $contactPersonData)
                 {
                     $contactPersonId = $contactPersonData['contactId'];
-                    $relationshipId = $contactPersonData['relationshipId'];
 
-                    $contactpersonsLabelMap[$contactPersonId] = $contactpersonNameMapping[$contactPersonId];
-                    $contactpersonRelationshipMap[$contactPersonId] = $relationshipId;
+                    $idDataMap[] = $contactPersonData;
+                    $optionId = count($idDataMap) - 1;
+
+                    $optionLabel = $contactpersonNameMapping[$contactPersonId] . '(' . $relationshipLabelMapping[$relationshipType] . ')';
+
+                    $idLabelMap[$optionId] = $optionLabel;
                 }
-
-                $elementIdentifier = 'contact_persons_' . $organisation . '_' . $relationship;
-
-                $this->pageHandler->add(
-                    'select',
-                    $elementIdentifier ,
-                    $relationshipLabelMapping[$relationship],
-                    $contactpersonsLabelMap,
-                    false,
-                    [
-                        'multiple' => 'multiple',
-                        'class' => 'crm-select2 huge',
-                    ]
-                );
-
-                $elementIdentifiers[] = $elementIdentifier;
-                $identifierContactRelationshipMap[$elementIdentifier] = $contactpersonRelationshipMap;
             }
 
-            $organisatioName = $organisationNameMapping[$organisation];
+            // Identifier for the element containing all contact persons for the organisation:
+            $elementIdentifier = 'contact_persons_' . $organisation;
+            $elementLabel = $organisationNameMapping[$organisation];
 
-            $organisationsElementList[$organisatioName] = $elementIdentifiers;
-            $elementList = array_merge($elementList, $elementIdentifiers);
+            $elementOrganisationMap[$elementIdentifier] = $organisation;
+
+            $this->pageHandler->add(
+                'select',
+                $elementIdentifier ,
+                $elementLabel,
+                $idLabelMap,
+                false,
+                [
+                    'multiple' => 'multiple',
+                    'class' => 'crm-select2 huge',
+                ]
+            );
         }
 
-        // Save the element list in the storage so we can easily rebuild the build structure.
-        CRM_Selectioncorrection_Storage::set(self::ElementListStorageKey, $elementList);
+        // The element organisation map is used in Smarty as an element list for rendering.
+        $this->pageHandler->assign(self::ElementOrganisationMap, $elementOrganisationMap);
 
-        $this->pageHandler->assign('contact_person_definition_organisations_element_list', $organisationsElementList);
+        // We will need the option ID to contact person data map in the process to identify the selected contact person IDs
+        // and generate the necessary meta data regarding the contact person IDs and their relationships:
+        CRM_Selectioncorrection_Storage::set(self::OptionIdToContactPersonDataMapStorageKey, $idDataMap);
 
-        // Save the identifier contact relationship map in the storage so we can create meta data out of it in the process method later:
-        CRM_Selectioncorrection_Storage::set(self::IdentifierContactRelationshipMapStorageKey, $identifierContactRelationshipMap);
+        // The element organisation map is saved for being able to identify which elements are relevant and to which organisation
+        // they belong to in the process stage. Furthermore, it is used to quickly regenerate the element structure
+        // in the rebuild method without having to reprocess any of the above steps:
+        CRM_Selectioncorrection_Storage::set(self::ElementOrganisationMap, $elementOrganisationMap);
 
         // Contact person definition elements:
         //$contact_person[] = [
@@ -124,7 +123,8 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
     public function rebuild ()
     {
-        $elementIdentifiers = CRM_Selectioncorrection_Storage::getWithDefault(self::ElementListStorageKey, []);
+        $elementOrganisationMap = CRM_Selectioncorrection_Storage::getWithDefault(self::ElementOrganisationMap, []);
+        $elementIdentifiers = array_keys($elementOrganisationMap);
 
         foreach ($elementIdentifiers as $elementIdentifier)
         {
@@ -148,13 +148,14 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
     public function process ()
     {
-        // TODO: There should be a way to include the organisation directly, see build method.
+        $elementOrganisationMap = CRM_Selectioncorrection_Storage::getWithDefault(self::ElementOrganisationMap, []);
+        $elementIdentifiers = array_keys($elementOrganisationMap);
 
-        $elementIdentifiers = CRM_Selectioncorrection_Storage::getWithDefault(self::ElementListStorageKey, []);
-        $identifierContactRelationshipMap = CRM_Selectioncorrection_Storage::getWithDefault(self::IdentifierContactRelationshipMapStorageKey, []);
+        $idDataMap = CRM_Selectioncorrection_Storage::getWithDefault(self::OptionIdToContactPersonDataMapStorageKey, []);
 
         $pageValues = $this->pageHandler->getPageValues($this->name);
-        // The following isn't that complicating:
+
+        // The following isn't that complicated:
         // "array_intersect_key" gives back all entries in the first given array which keys are also present in the second given array,
         // "array_flip" flips keys and values of an array, which is needed because "elementIdentifiers" is a list of identifiers, which
         // are the keys in "pageValues".
@@ -162,26 +163,32 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
         $contactIds = [];
         $contactRelationshipsMap = [];
-        foreach ($elementValues as $elementIdentifier => $elementContactIds)
+        foreach ($elementValues as $elementIdentifier => $optionIds)
         {
-            if (empty($elementContactIds))
+            foreach ($optionIds as $optionId)
             {
-                continue;
-            }
-
-            $contactIds = array_merge($contactIds, $elementContactIds);
-
-            // We will need a contact relationships map later for creating the meta data for the filtered contacts:
-            foreach ($elementContactIds as $contactId)
-            {
-                $relationshipId = $identifierContactRelationshipMap[$elementIdentifier][$contactId];
-
-                if (!array_key_exists($contactId, $contactRelationshipsMap))
+                if ($optionId == self::IncludeOrganisationDirectlyIndex)
                 {
-                    $contactRelationshipsMap[$contactId] = [];
+                    // If we shall include the organisation directly, we do it by pushing the organisation to the contact list:
+                    $contactIds[] = $elementOrganisationMap[$elementIdentifier];
                 }
+                else
+                {
+                    $optionData = $idDataMap[$optionId];
+                    $contactId = $optionData['contactId'];
+                    $relationshipId = $optionData['relationshipId'];
 
-                $contactRelationshipsMap[$contactId][] = $relationshipId;
+                    $contactIds[] = $contactId;
+
+                    if (array_key_exists($contactId, $contactRelationshipsMap))
+                    {
+                        $contactRelationshipsMap[$contactId][] = $relationshipId;
+                    }
+                    else
+                    {
+                        $contactRelationshipsMap[$contactId] = [$relationshipId];
+                    }
+                }
             }
         }
 
@@ -195,12 +202,16 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         $metaData = [];
         foreach ($filteredContactIds as $contactId)
         {
-            foreach ($contactRelationshipsMap[$contactId] as $relationshipId)
+            // Directly included organisations have no relationships, so we have to check if the key is set:
+            if (array_key_exists($contactId, $contactRelationshipsMap))
             {
-                $metaData[] = [
-                    'contact_id' => $contactId,
-                    'relationship_id' => $relationshipId,
-                ];
+                foreach ($contactRelationshipsMap[$contactId] as $relationshipId)
+                {
+                    $metaData[] = [
+                        'contact_id' => $contactId,
+                        'relationship_id' => $relationshipId,
+                    ];
+                }
             }
         }
 
