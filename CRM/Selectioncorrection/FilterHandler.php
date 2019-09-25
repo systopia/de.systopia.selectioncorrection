@@ -27,9 +27,9 @@ class CRM_Selectioncorrection_FilterHandler
     function __construct ()
     {
         $this->filters = [
-            new CRM_Selectioncorrection_Filter_NotDeceased(),
-            new CRM_Selectioncorrection_Filter_AllowsMail(),
-            new CRM_Selectioncorrection_Filter_AllowsEmail(),
+            new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Is not deceased', 'is_deceased', false),
+            new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows email', 'do_not_email'),
+            new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows mail', 'do_not_mail'),
         ];
     }
 

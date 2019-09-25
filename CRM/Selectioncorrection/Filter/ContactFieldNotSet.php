@@ -15,15 +15,27 @@
 
 use \NilPortugues\Sql\QueryBuilder\Syntax\Where;
 
-class CRM_Selectioncorrection_Filter_AllowsEmail extends CRM_Selectioncorrection_Filter_BaseClass
+/**
+ * Filter for only allowing contacts having a field (meaning a flag) in the contact table not set (meaning it is zero or null).
+ */
+class CRM_Selectioncorrection_Filter_ContactFieldNotSet extends CRM_Selectioncorrection_Filter_BaseClass
 {
-    protected $name = 'Allows email';
+    private $field;
+
+    public function __construct ($name, $field, $optional=true)
+    {
+        $this->name = $name;
+        $this->field = $field;
+        $this->optional = $optional;
+
+        parent::__construct();
+    }
 
     /**
     * @param Where $where
     */
     public function addWhere (Where $where)
     {
-        $this->addSubwhereIsZeroOrNull($where, 'do_not_email');
+        $this->addSubwhereIsZeroOrNull($where, $this->field);
     }
 }
