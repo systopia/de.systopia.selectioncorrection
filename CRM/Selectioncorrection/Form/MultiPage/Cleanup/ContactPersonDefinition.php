@@ -142,7 +142,21 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
     public function validate (&$errors)
     {
-        // TODO: Implement.
+        $groupTitle = CRM_Selectioncorrection_Storage::get(CRM_Selectioncorrection_Config::GroupTitleStorageKey);
+
+        if (CRM_Selectioncorrection_Group::doesGroupExist($groupTitle))
+        {
+            $errorValues = [1 => $groupTitle];
+            $errorMessage = E::ts("Someone created the group '%1' in the background. Please rename it or go back and choose another group title.", $errorValues);
+
+            $errors[self::GroupTitleElementIdentifier] = $errorMessage;
+
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public function process ()
