@@ -30,6 +30,10 @@
     <div class="content">{$form.group_title.html}</div>
   </div>
 {elseif $current_page == 'contact_person_definition'}
+  <div>
+    <h3>{ts}Contact person selection:{/ts}</h3>
+    <br>
+  </div>
   {if $contact_person_definition_element_organisation_map}
     {foreach key=element_identifier item=organisation_id from=$contact_person_definition_element_organisation_map}
       <div class="crm-section">
@@ -41,9 +45,8 @@
   {else}
     <div>
       {ts}There were no organisations found. Click the button to continue.{/ts}
-      <br>
+      <br><br>
     </div>
-    <div class="clear"></div>
   {/if}
 {/if}
 

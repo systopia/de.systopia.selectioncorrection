@@ -68,7 +68,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
                     $idDataMap[] = $contactPersonData;
                     $optionId = count($idDataMap) - 1;
 
-                    $optionLabel = $contactpersonNameMapping[$contactPersonId] . '(' . $relationshipLabelMapping[$relationshipType] . ')';
+                    $optionLabel = $contactpersonNameMapping[$contactPersonId] . ' (' . $relationshipLabelMapping[$relationshipType] . ')';
 
                     $idLabelMap[$optionId] = $optionLabel;
                 }
@@ -104,6 +104,10 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         // they belong to in the process stage. Furthermore, it is used to quickly regenerate the element structure
         // in the rebuild method without having to reprocess any of the above steps:
         CRM_Selectioncorrection_Storage::set(self::ElementOrganisationMap, $elementOrganisationMap);
+
+        $this->pageHandler->setTitle(E::ts('Cleanup contact person selection'));
+        // TODO: We could change this to not being called in the build function here but in the BaseClass for
+        //       the multi page instead. It could be a property called "title" here instead.
 
         // Contact person definition elements:
         //$contact_person[] = [

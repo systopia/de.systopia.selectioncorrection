@@ -64,6 +64,10 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
             null,
             true
         );
+
+        $this->pageHandler->setTitle(E::ts('Cleanup preparation'));
+        // TODO: We could change this to not being called in the build function here but in the BaseClass for
+        //       the multi page instead. It could be a property called "title" here instead.
     }
 
     public function rebuild ()
