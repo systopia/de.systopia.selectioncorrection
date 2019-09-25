@@ -37,6 +37,7 @@ class CRM_Selectioncorrection_FilterHandler
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows email', 'do_not_email'),
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows mail', 'do_not_mail'),
             new CRM_Selectioncorrection_Filter_BulkmailSet(),
+            new CRM_Selectioncorrection_Filter_NotInGroup(),
         ];
 
         $this->internalFilters = [
