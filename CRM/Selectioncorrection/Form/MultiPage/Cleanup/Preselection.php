@@ -81,31 +81,10 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
     {
         $groupTitle = $this->pageHandler->_submitValues[self::GroupTitleElementIdentifier];
 
-        $foundGroups = CRM_Selectioncorrection_Utility_CivicrmApi::get(
-            'Group',
-            [
-                'return' => [
-                    "title"
-                ],
-                'name' => $groupTitle,
-                'title' => $groupTitle,
-            ],
-            [
-                'limit' => 1,
-                'or' => [
-                    [
-                        'name',
-                        'title',
-                    ]
-                ]
-            ]
-        );
-
-        if ($foundGroups['count'] > 0)
+        if (CRM_Selectioncorrection_Group::doesGroupExist($groupTitle))
         {
-            $existingGroupTitle = $foundGroups['values'][0]['title'];
-            $errorValues = [1 => $groupTitle, 2 => $existingGroupTitle];
-            $errorMessage = E::ts("A group with '%1' as name or title already exists. Have a look at group '%2'.", $errorValues);
+            $errorValues = [1 => $groupTitle];
+            $errorMessage = E::ts("A group with '%1' as name or title already exists.", $errorValues);
 
             $errors[self::GroupTitleElementIdentifier] = $errorMessage;
 

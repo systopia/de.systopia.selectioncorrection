@@ -25,9 +25,34 @@ class CRM_Selectioncorrection_Group
     private $groupName = null;
     private $groupId = null;
 
-    public static function isGroupTitleFree ($groupTitle)
+    /**
+     * Checks if a group does already exists.
+     * @param string $groupNameOrTitle The name/title of the group.
+     * @return bool True if it exists, otherwise false.
+     */
+    public static function doesGroupExist ($groupNameOrTitle)
     {
-        // TODO: Get this from the preselection page.
+        $foundGroups = CRM_Selectioncorrection_Utility_CivicrmApi::get(
+            'Group',
+            [
+                'return' => [
+                    'title'
+                ],
+                'name' => $groupNameOrTitle,
+                'title' => $groupNameOrTitle,
+            ],
+            [
+                'limit' => 1,
+                'or' => [
+                    [
+                        'name',
+                        'title',
+                    ]
+                ]
+            ]
+        );
+
+        return $foundGroups['count'] > 0;
     }
 
     private function createGroup ()
