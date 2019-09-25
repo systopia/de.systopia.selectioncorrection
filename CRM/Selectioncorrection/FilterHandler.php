@@ -17,12 +17,18 @@ use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 
 class CRM_Selectioncorrection_FilterHandler
 {
-    private static $singleton = NULL;
+    private static $singleton = null;
 
     /**
      * A list of all filter classes with associated data.
      */
     private $filters = [];
+
+    /**
+     * A list of all internal filters which are applied but not listed.
+     * This is used for non-optional filters that shall be not visible, like the "is not deleted" filter.
+     */
+    private $internalFilters = [];
 
     function __construct ()
     {
@@ -31,6 +37,10 @@ class CRM_Selectioncorrection_FilterHandler
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows email', 'do_not_email'),
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows mail', 'do_not_mail'),
         ];
+
+        $this->internalFilters = [
+            new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Is not deleted', 'is_deleted'),
+        ];
     }
 
     /**
@@ -38,7 +48,7 @@ class CRM_Selectioncorrection_FilterHandler
     */
     public static function getSingleton ()
     {
-        if (self::$singleton === NULL)
+        if (self::$singleton === null)
         {
             self::$singleton = new self();
         }
@@ -106,11 +116,19 @@ class CRM_Selectioncorrection_FilterHandler
         {
             $filter->addJoin($query);
         }
+        foreach ($this->internalFilters as $filter)
+        {
+            $filter->addJoin($query);
+        }
 
         $where = $query->where();
 
         // Add all where clauses to the query:
         foreach ($this->filters as $filter)
+        {
+            $filter->addWhere($where);
+        }
+        foreach ($this->internalFilters as $filter)
         {
             $filter->addWhere($where);
         }
