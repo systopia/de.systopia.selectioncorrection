@@ -20,6 +20,7 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
     protected $name = 'BaseClass';
     protected $identifier = '';
     protected $optional = true;
+    protected $defaultStatus = true;
 
     public function __construct ()
     {
@@ -91,7 +92,7 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
     {
         $key = $this->getStatusStorageKey();
 
-        return CRM_Selectioncorrection_Storage::getWithDefault($key, true);
+        return CRM_Selectioncorrection_Storage::getWithDefault($key, $this->defaultStatus);
     }
 
     public function addJoin ($select)
