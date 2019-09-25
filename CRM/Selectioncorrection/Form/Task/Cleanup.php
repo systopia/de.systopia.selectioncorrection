@@ -34,9 +34,6 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
 
     protected function doFinalProcess ()
     {
-        // TODO: We should forward to the created group here instead of automatically showing the search result again.
-        //       -> Group URL: civicrm/group/search?reset=1&force=1&gid=<newGroupId>
-
         $groupTitle = CRM_Selectioncorrection_Storage::get(CRM_Selectioncorrection_Config::GroupTitleStorageKey);
 
         $group = new CRM_Selectioncorrection_Group();
@@ -65,5 +62,9 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
         $group->save();
         $metaData->setGroupId($group->getGroupId());
         $metaData->save();
+
+        // Forward to the created group instead of automatically showing the search result again:
+        $showGroupUrl = CRM_Utils_System::url('civicrm/group/search', 'reset=1&force=1&gid=' . $group->getGroupId());
+        CRM_Utils_System::redirect($showGroupUrl);
     }
 }
