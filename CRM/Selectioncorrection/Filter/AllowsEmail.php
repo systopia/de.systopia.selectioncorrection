@@ -17,7 +17,7 @@ use \NilPortugues\Sql\QueryBuilder\Syntax\Where;
 
 class CRM_Selectioncorrection_Filter_AllowsEmail extends CRM_Selectioncorrection_Filter_BaseClass
 {
-    protected $name = 'AllowsEmail';
+    protected $name = 'Allows email';
 
     /**
     * @param Where $where

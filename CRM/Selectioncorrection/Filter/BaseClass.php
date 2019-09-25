@@ -18,7 +18,17 @@ use \NilPortugues\Sql\QueryBuilder\Syntax\Where;
 abstract class CRM_Selectioncorrection_Filter_BaseClass
 {
     protected $name = 'BaseClass';
+    protected $identifier = '';
     protected $optional = true;
+
+    public function __construct ()
+    {
+        $identifier = preg_replace('/\s/', '', $this->name); // Removes all spacelike characters.
+        $identifier = strtolower($identifier);
+        $identifier = 'filter_' . $identifier;
+
+        $this->identifier = $identifier;
+    }
 
     /**
      * @return string The key used for saving the status in the storage.
@@ -41,19 +51,21 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
                  ->isNull($column);
     }
 
+    /**
+     * Returns a human readable name for the filter.
+     */
     public function getName ()
     {
         return $this->name;
     }
 
     /**
-     * Gets an unique identifier for the filter.
+     * Returns an unique identifier for the filter.
      * @return string
      */
     public function getIdentifier ()
     {
-        $identifier = 'filter_' . strtolower($this->name);
-        return $identifier;
+        return $this->identifier;
     }
 
     public function isOptional ()
