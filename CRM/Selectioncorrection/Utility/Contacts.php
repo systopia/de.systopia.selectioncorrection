@@ -116,4 +116,41 @@ class CRM_Selectioncorrection_Utility_Contacts
 
         return $contactIdNameMap;
     }
+
+    /**
+     * Gets the contact types (contact type and contact sub type) for a list of contacts.
+     * @param string[] $contactIds The list of contact IDs.
+     * @return array A map of "contact ID" => "[contact_type, contact_sub_type]".
+     */
+    static function getContactTypes ($contactIds)
+    {
+        $result = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
+            'Contact',
+            [
+                'return' => [
+                    'id',
+                    'contact_type',
+                    'contact_sub_type',
+                ],
+                'id' => [
+                    'IN' => $contactIds
+                ],
+            ],
+            [
+                $contactIds,
+            ]
+        );
+
+        $contactsTypeInformation = [];
+
+        foreach ($result as $contact)
+        {
+            $contactsTypeInformation[$contact['id']] = [
+                'contact_type' => $contact['contact_type'],
+                'contact_sub_type' => $contact['contact_sub_type'],
+            ];
+        }
+
+        return $contactsTypeInformation;
+    }
 }

@@ -41,6 +41,8 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         $contactpersonNameMapping = CRM_Selectioncorrection_Utility_Contacts::getContactDisplayNames($contactPersonIds);
         $relationshipLabelMapping = CRM_Selectioncorrection_Utility_Relationships::getRelationshipTypeLabels($relationshipIds);
 
+        $organisationTypeInformation = CRM_Selectioncorrection_Utility_Contacts::getContactTypes($organisationIds);
+
         /**
          * @var $idDataMap Maps option value IDs to the contact person data needed for processing.
          *                 A specific index is used to indicate that the organisation itself shall be included.
@@ -74,9 +76,17 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
                 }
             }
 
+            // Image/Info popup for the organisation:
+            $typeInfo = $organisationTypeInformation[$organisation];
+            $organisationImage = CRM_Contact_BAO_Contact_Utils::getImage(
+                empty($typeInfo['contact_sub_type']) ? $typeInfo['contact_type'] : $typeInfo['contact_sub_type'],
+                FALSE,
+                $organisation
+            );
+
             // Identifier for the element containing all contact persons for the organisation:
             $elementIdentifier = 'contact_persons_' . $organisation;
-            $elementLabel = $organisationNameMapping[$organisation];
+            $elementLabel = $organisationNameMapping[$organisation] . $organisationImage;
 
             $elementOrganisationMap[$elementIdentifier] = $organisation;
 
@@ -108,21 +118,6 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         $this->pageHandler->setTitle(E::ts('Cleanup contact person selection'));
         // TODO: We could change this to not being called in the build function here but in the BaseClass for
         //       the multi page instead. It could be a property called "title" here instead.
-
-        // Contact person definition elements:
-        //$contact_person[] = [
-        //    'org_id' => 43,
-        //    'img' =>  CRM_Contact_BAO_Contacteset=1 [filter_1] =_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']),
-        //    'contacts ' => [
-        //      43 => [
-        //          'name' => 'sda',
-        //          'img' =>  CRM_Contact_BAO_Contact_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']),
-        //      ],
-        //    ],
-        //];
-        //$popup_img = CRM_Contact_BAO_Contact_Utils::getImage(empty($contact['contact_sub_type']) ? $contact['contact_type'] : $contact['contact_sub_type'], FALSE, $contact['id']);
-        //$this->assign("contact_person_org_1434_popup", $popup_img);
-        // {$contact_person_org_1434_popup}
     }
 
     public function rebuild ()

@@ -36,10 +36,11 @@
   </div>
   {if $contact_person_definition_element_organisation_map}
     {foreach key=element_identifier item=organisation_id from=$contact_person_definition_element_organisation_map}
-      <div class="crm-section">
+      <div>
         <div class="label">{$form.$element_identifier.label}</div>
+        <br>
         <div class="content">{$form.$element_identifier.html}</div>
-        <div class="clear"></div>
+        <br>
       </div>
     {/foreach}
   {else}
