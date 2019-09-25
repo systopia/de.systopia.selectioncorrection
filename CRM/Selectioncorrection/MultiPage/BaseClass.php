@@ -112,7 +112,7 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
      */
     protected function getFilteredExportValues ($filter=null, $removeCiviValues=true)
     {
-        $values = $this->exportValues($filter, true);
+        $values = $this->exportValues($filter, $removeCiviValues);
 
         if ($removeCiviValues)
         {

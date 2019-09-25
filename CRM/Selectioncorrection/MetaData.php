@@ -26,11 +26,6 @@ class CRM_Selectioncorrection_MetaData
     private $list = [];
     private $groupId = null;
 
-    public function __construct ()
-    {
-        // TODO: Do we need to do something here?
-    }
-
     public function setGroupId ($groupId)
     {
         if ($groupId === null)

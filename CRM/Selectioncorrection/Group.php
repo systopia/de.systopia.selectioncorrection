@@ -25,11 +25,6 @@ class CRM_Selectioncorrection_Group
     private $groupName = null;
     private $groupId = null;
 
-    public function __construct ()
-    {
-        // TODO: Do we need to do something here?
-    }
-
     public static function isGroupTitleFree ($groupTitle)
     {
         // TODO: Get this from the preselection page.
@@ -100,7 +95,5 @@ class CRM_Selectioncorrection_Group
                 'status' => 'Added',
             ]
         );
-
-        // TODO: Should we clear the contact list here?
     }
 }
