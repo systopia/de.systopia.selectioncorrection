@@ -14,6 +14,7 @@
 +-------------------------------------------------------*/
 
 use \NilPortugues\Sql\QueryBuilder\Syntax\Where;
+use \NilPortugues\Sql\QueryBuilder\Manipulation\Select;
 
 abstract class CRM_Selectioncorrection_Filter_BaseClass
 {
@@ -95,7 +96,7 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
         return CRM_Selectioncorrection_Storage::getWithDefault($key, $this->defaultStatus);
     }
 
-    public function addJoin ($select)
+    public function addJoin (Select $select)
     {
         // Add nothing as default.
     }
@@ -103,5 +104,8 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
     /**
      * @param Where $where
      */
-    abstract public function addWhere (Where $where);
+    public function addWhere (Where $where)
+    {
+        // Add nothing as default.
+    }
 }

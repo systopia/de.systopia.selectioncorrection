@@ -36,6 +36,7 @@ class CRM_Selectioncorrection_FilterHandler
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Is not deceased', 'is_deceased', false),
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows email', 'do_not_email'),
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows mail', 'do_not_mail'),
+            new CRM_Selectioncorrection_Filter_BulkmailSet(),
         ];
 
         $this->internalFilters = [
@@ -109,16 +110,17 @@ class CRM_Selectioncorrection_FilterHandler
 
         $builder = new GenericBuilder();
 
-        $query = $builder->select()->setTable('civicrm_contact')->setColumns(['id']);
+        $select = $builder->select();
+        $query = $select->setTable('civicrm_contact')->setColumns(['id']);
 
-        // Add all joins to the query:
+        // Add all joins to the select statement:
         foreach ($this->filters as $filter)
         {
-            $filter->addJoin($query);
+            $filter->addJoin($select);
         }
         foreach ($this->internalFilters as $filter)
         {
-            $filter->addJoin($query);
+            $filter->addJoin($select);
         }
 
         $where = $query->where();
