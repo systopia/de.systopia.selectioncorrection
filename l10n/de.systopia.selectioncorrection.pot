@@ -1,0 +1,70 @@
+# Copyright CiviCRM LLC (c) 2004-2015
+# This file is distributed under the same license as the CiviCRM package.
+# If you contribute heavily to a translation and deem your work copyrightable,
+# make sure you license it to CiviCRM LLC under Academic Free License 3.0.
+msgid ""
+msgstr ""
+"Project-Id-Version: de.systopia.selectioncorrection\n"
+"POT-Creation-Date: 2019-09-26 10:04+0200\n"
+"Language-Team: CiviCRM Translators <civicrm-translators@lists.civicrm.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: CRM/Selectioncorrection/Form/MultiPage/Cleanup/ContactPersonDefinition.php
+msgid "direct"
+msgstr ""
+
+#: CRM/Selectioncorrection/Form/MultiPage/Cleanup/ContactPersonDefinition.php
+msgid "Cleanup contact person selection"
+msgstr ""
+
+#: CRM/Selectioncorrection/Form/MultiPage/Cleanup/Preselection.php
+msgid "Relationship types for contact persons"
+msgstr ""
+
+#: CRM/Selectioncorrection/Form/MultiPage/Cleanup/Preselection.php
+msgid "Group title"
+msgstr ""
+
+#: CRM/Selectioncorrection/Form/MultiPage/Cleanup/Preselection.php
+msgid "Cleanup preparation"
+msgstr ""
+
+#: CRM/Selectioncorrection/Form/Task/Cleanup.php
+msgid "Export Successful"
+msgstr ""
+
+#: CRM/Selectioncorrection/Form/Task/Cleanup.php
+msgid ""
+"Someone created the group '%1' in the background. Please rename it or go "
+"back and choose another group title."
+msgstr ""
+
+#: CRM/Selectioncorrection/Form/Task/Cleanup.php
+msgid "You can export the results <a href=\"%1\">HERE</a>."
+msgstr ""
+
+#: CRM/Selectioncorrection/MultiPage/BaseClass.php
+msgid "Set"
+msgstr ""
+
+#: CRM/Selectioncorrection/MultiPage/BaseClass.php
+msgid "Filter"
+msgstr ""
+
+#: CRM/Selectioncorrection/Upgrader/Base.php
+msgid "Upgrade %1 to revision %2"
+msgstr ""
+
+#: selectioncorrection.php
+msgid "Cleanup"
+msgstr ""
+
+#: templates/CRM/Selectioncorrection/Form/Task/Cleanup.tpl
+msgid "Contact person selection:"
+msgstr ""
+
+#: templates/CRM/Selectioncorrection/Form/Task/Cleanup.tpl
+msgid "There were no organisations found. Click the button to continue."
+msgstr ""
