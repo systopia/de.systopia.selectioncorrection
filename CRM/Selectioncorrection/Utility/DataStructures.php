@@ -114,8 +114,7 @@ class CRM_Selectioncorrection_Utility_DataStructures
             ];
         }
 
-        // Remove duplicate values in the contact persons list:
-        array_keys(array_flip($contactPersonIds));
+        array_unique($contactPersonIds);
 
         $result = [
             'tree' => $tree,

@@ -38,6 +38,9 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         $organisationIds = $treeData['organisationIds'];
         $contactPersonIds = $treeData['contactPersonIds'];
 
+        $filteredContactPersonIds = CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters($contactPersonIds);
+        $filteredContactPersonIdsAsKeys = array_flip($filteredContactPersonIds);
+
         $organisationNameMapping = CRM_Selectioncorrection_Utility_Contacts::getContactDisplayNames($organisationIds);
         $contactpersonNameMapping = CRM_Selectioncorrection_Utility_Contacts::getContactDisplayNames($contactPersonIds);
         $relationshipLabelMapping = CRM_Selectioncorrection_Utility_Relationships::getRelationshipTypeLabels($relationshipIds);
@@ -67,6 +70,12 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
                 foreach ($contactPersons as $contactPersonData)
                 {
                     $contactPersonId = $contactPersonData['contactId'];
+
+                    // If the contact person has been filtered out, ignore it:
+                    if (!array_key_exists($contactPersonId, $filteredContactPersonIdsAsKeys))
+                    {
+                        continue;
+                    }
 
                     $idDataMap[] = $contactPersonData;
                     $optionId = count($idDataMap) - 1;
@@ -209,12 +218,11 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         // Make the IDs unique to prevent duplicates:
         $contactIds = array_unique($contactIds);
 
-        $filteredContactIds = CRM_Selectioncorrection_FilterHandler::getSingleton()->performFilters($contactIds);
-        CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, $filteredContactIds);
+        CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, $contactIds);
 
         // Create the meta data for every filtered selected contact's relationships:
         $metaData = [];
-        foreach ($filteredContactIds as $contactId)
+        foreach ($contactIds as $contactId)
         {
             // Directly included organisations have no relationships, so we have to check if the key is set:
             if (array_key_exists($contactId, $contactRelationshipsMap))
