@@ -201,7 +201,7 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
             // We need the elements of the last page created in PHP (but not rendered in smarty)
             // for the next page to be able to read it's element values.
             // Rebuild does the minimum amount of effort to achieve this.
-            $lastPage->rebuild($defaults);
+            $lastPage->rebuild();
 
             // We can only check for errors after the page has been rebuild...
             $noErrorsFound = $this->validate();
@@ -221,7 +221,7 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
 
                     $lastPage = $this->pages[$lastPageName];
 
-                    $lastPage->rebuild($defaults);
+                    $lastPage->rebuild();
                 }
             }
             else if (($lastPageName == $this->finalPageName) || ($lastPageName == $this->previousPages[$nextPageName]))
