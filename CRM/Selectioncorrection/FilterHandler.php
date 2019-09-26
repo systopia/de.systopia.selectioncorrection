@@ -68,6 +68,25 @@ class CRM_Selectioncorrection_FilterHandler
     }
 
     /**
+     * Get all currently enabled filters.
+     * @return CRM_Selectioncorrection_Filter_BaseClass[] The list of the filters.
+     */
+    public function getActiveFilters ()
+    {
+        $activeFilters = [];
+
+        foreach ($this->filters as $filter)
+        {
+            if ($filter->getStatus())
+            {
+                $activeFilters[] = $filter;
+            }
+        }
+
+        return $activeFilters;
+    }
+
+    /**
      * Get the identifiers of all available filters.
      * @return string[] The list of filter identifiers.
      */
@@ -114,8 +133,10 @@ class CRM_Selectioncorrection_FilterHandler
         $select = $builder->select();
         $query = $select->setTable('civicrm_contact')->setColumns(['id']);
 
+        $activeFilters = $this->getActiveFilters();
+
         // Add all joins to the select statement:
-        foreach ($this->filters as $filter)
+        foreach ($activeFilters as $filter)
         {
             $filter->addJoin($select);
         }
@@ -127,7 +148,7 @@ class CRM_Selectioncorrection_FilterHandler
         $where = $query->where();
 
         // Add all where clauses to the query:
-        foreach ($this->filters as $filter)
+        foreach ($activeFilters as $filter)
         {
             $filter->addWhere($where);
         }
