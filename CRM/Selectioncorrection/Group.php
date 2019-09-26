@@ -112,13 +112,15 @@ class CRM_Selectioncorrection_Group
     {
         $this->createGroup();
 
-        CRM_Selectioncorrection_Utility_CivicrmApi::create(
-            'GroupContact',
-            [
-                'group_id' => $this->groupName, // Even if it is called "group_id", the group name is meant.
-                'contact_id' => $this->contactList,
-                'status' => 'Added',
-            ]
-        );
+        if (!empty($this->contactList)) {
+          CRM_Selectioncorrection_Utility_CivicrmApi::create(
+              'GroupContact',
+              [
+                  'group_id' => $this->groupName, // Even if it is called "group_id", the group name is meant.
+                  'contact_id' => $this->contactList,
+                  'status' => 'Added',
+              ]
+          );
+        }
     }
 }
