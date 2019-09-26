@@ -158,7 +158,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
                 $elementIdentifier ,
                 $elementIdentifier,
                 [],
-                false,
+                true,
                 [
                     'multiple' => 'multiple',
                 ]
