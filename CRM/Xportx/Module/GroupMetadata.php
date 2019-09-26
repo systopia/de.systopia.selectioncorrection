@@ -62,6 +62,34 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
     // add other contact join
     $related_contact_alias = $this->getAlias('related_contact');
     $joins[] = "LEFT JOIN civicrm_contact {$related_contact_alias} ON {$related_contact_alias}.id = COALESCE({$relationship_a_alias}.contact_id_b, {$relationship_b_alias}.contact_id_a)";
+
+
+    // add ADDRESS: picked from option
+    //  no relation: contact.primary
+    //     relation: contact.work (2)
+    //      -> else: related.work (2)
+    $address_option1_alias = $this->getAlias('address_self');
+    $joins[] = "LEFT JOIN civicrm_address {$address_option1_alias} ON {$address_option1_alias}.contact_id = {$contact_term} AND {$address_option1_alias}.is_primary = 1";
+    $address_option2_alias = $this->getAlias('address_self_work');
+    $joins[] = "LEFT JOIN civicrm_address {$address_option2_alias} ON {$address_option2_alias}.contact_id = {$contact_term} AND {$address_option2_alias}.location_type_id = 2";
+    $address_option3_alias = $this->getAlias('address_org_work');
+    $joins[] = "LEFT JOIN civicrm_address {$address_option3_alias} ON {$address_option3_alias}.contact_id = {$related_contact_alias}.id AND {$address_option3_alias}.location_type_id = 2";
+
+    // join the final address
+    $address_alias = $this->getAlias('address');
+    $joins[] = "LEFT JOIN civicrm_address {$address_alias} ON {$address_alias}.id = 
+      COALESCE(
+        IF({$related_contact_alias}.id IS NULL,     {$address_option1_alias}.id, NULL),
+        IF({$related_contact_alias}.id IS NOT NULL, {$address_option2_alias}.id, NULL),
+        IF({$related_contact_alias}.id IS NOT NULL, {$address_option3_alias}.id, NULL)
+       )";
+
+    // add more greetings
+    if ($this->hasMoreGreetings()) {
+      // add more greetings of the related contact. if none exists, the own
+      $greetings_alias = $this->getAlias('greetings');
+      $joins[] = "LEFT JOIN civicrm_value_moregreetings {$greetings_alias} ON {$greetings_alias}.entity_id = COALESCE({$related_contact_alias}.id, {$contact_term})";
+    }
   }
 
   /**
@@ -70,13 +98,34 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
    * "contact" or this module's joins
    */
   public function addSelects(&$selects) {
-    $related_contact_alias = $this->getAlias('related_contact');
-    $value_prefix = $this->getValuePrefix();
+    $related_contact = $this->getAlias('related_contact');
+    $address_alias   = $this->getAlias('address');
+    $greetings_alias = $this->getAlias('greetings');
+    $value_prefix    = $this->getValuePrefix();
 
     foreach ($this->config['fields'] as $field_spec) {
       $field_name = $field_spec['key'];
-      // the default ist a column from the contact table
-      $selects[] = "{$related_contact_alias}.{$field_name} AS {$value_prefix}{$field_name}";
+      if (substr($field_name, 0, 5) == 'addr_') {
+        // add address field
+        $column_name = substr($field_name, 5);
+        $selects[] = "{$address_alias}.{$column_name} AS {$value_prefix}{$field_name}";
+
+      } elseif (substr($field_name, 0, 9) == 'greeting_') {
+        // add greetings field
+        $selects[] = "{$greetings_alias}.{$field_name} AS {$value_prefix}{$field_name}";
+
+        } else {
+        // the default is a column from the contact table
+        $selects[] = "{$related_contact}.{$field_name} AS {$value_prefix}{$field_name}";
+      }
     }
+  }
+
+  /**
+   * Check if the moregreetings extension is present
+   * @return bool
+   */
+  protected function hasMoreGreetings() {
+    return function_exists('moregreetings_civicrm_enable');
   }
 }
