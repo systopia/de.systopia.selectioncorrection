@@ -11,6 +11,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: CRM/Selectioncorrection/Filter/BulkmailSet.php
+msgid "Bulkmail set"
+msgstr ""
+
+#: CRM/Selectioncorrection/Filter/NotInGroup.php
+msgid "Not in a group"
+msgstr ""
+
 #: CRM/Selectioncorrection/Form/MultiPage/Cleanup/ContactPersonDefinition.php
 msgid "direct"
 msgstr ""
@@ -31,6 +39,10 @@ msgstr ""
 msgid "Cleanup preparation"
 msgstr ""
 
+#: CRM/Selectioncorrection/Form/MultiPage/Cleanup/Preselection.php
+msgid "A group with '%1' as name or title already exists."
+msgstr ""
+
 #: CRM/Selectioncorrection/Form/Task/Cleanup.php
 msgid "Export Successful"
 msgstr ""
@@ -46,23 +58,31 @@ msgid "You can export the results <a href=\"%1\">HERE</a>."
 msgstr ""
 
 #: CRM/Selectioncorrection/MultiPage/BaseClass.php
-msgid "Set"
+msgid "Finish"
 msgstr ""
 
 #: CRM/Selectioncorrection/MultiPage/BaseClass.php
-msgid "Filter"
+msgid "Next"
 msgstr ""
 
 #: CRM/Selectioncorrection/Upgrader/Base.php
 msgid "Upgrade %1 to revision %2"
 msgstr ""
 
-#: selectioncorrection.php
-msgid "Cleanup"
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Is not deceased"
 msgstr ""
 
-#: templates/CRM/Selectioncorrection/Form/Task/Cleanup.tpl
-msgid "Contact person selection:"
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows email"
+msgstr ""
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows mail"
+msgstr ""
+
+#: selectioncorrection.php
+msgid "Cleanup"
 msgstr ""
 
 #: templates/CRM/Selectioncorrection/Form/Task/Cleanup.tpl
