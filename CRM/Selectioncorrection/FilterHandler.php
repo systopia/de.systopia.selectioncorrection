@@ -38,6 +38,11 @@ class CRM_Selectioncorrection_FilterHandler
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows mail', 'do_not_mail'),
             new CRM_Selectioncorrection_Filter_BulkmailSet(),
             new CRM_Selectioncorrection_Filter_NotInGroup(),
+            new CRM_Selectioncorrection_Filter_CustomFieldNotSet('Allows event invitation (custom)', 'besonderheiten', 'bes_29883'),
+            new CRM_Selectioncorrection_Filter_CustomFieldNotSet('Allows RW (custom)', 'besonderheiten', 'bes_30170'),
+            new CRM_Selectioncorrection_Filter_CustomFieldNotSet('Not digital RW (custom)', 'besonderheiten', 'bes_30186'),
+            new CRM_Selectioncorrection_Filter_CustomFieldNotSet('Allows WK (custom)', 'besonderheiten', 'bes_30395'),
+            new CRM_Selectioncorrection_Filter_CustomFieldNotSet('Allows JB (custom)', 'besonderheiten', 'bes_30445'),
         ];
 
         $this->internalFilters = [
