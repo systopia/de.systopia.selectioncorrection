@@ -95,7 +95,7 @@ class CRM_Selectioncorrection_Utility_CivicrmApi
      */
     public static function getValuesChecked ($entity, $additionalParams, $paramValues, $additionOptions=[])
     {
-        if (!allParametersAreSet($paramValues))
+        if (!self::allParametersAreSet($paramValues))
         {
             return [];
         }
@@ -123,7 +123,7 @@ class CRM_Selectioncorrection_Utility_CivicrmApi
      */
     public static function createChecked ($entity, $additionalParams=[], $paramValues, $additionOptions=[])
     {
-        if (!allParametersAreSet($paramValues))
+        if (!self::allParametersAreSet($paramValues))
         {
             return null;
         }
