@@ -89,6 +89,26 @@ msgstr "E-Mailkontakt gestattet"
 msgid "Allows mail"
 msgstr "Postalischer Kontakt gestattet"
 
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows event invitation (custom)"
+msgstr "Veranstaltungseinladung gestattet (benutzerdef.)"
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows RW (custom)"
+msgstr "RW gestattet (benutzerdef.)"
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Not digital RW (custom)"
+msgstr "RW nicht elektronisch (benutzerdef.)"
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows WK (custom)"
+msgstr "WK gestattet (benutzerdef.)"
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows JB (custom)"
+msgstr "JB gestattet (benutzerdef.)"
+
 #: selectioncorrection.php
 msgid "Cleanup"
 msgstr "Bereinigung"

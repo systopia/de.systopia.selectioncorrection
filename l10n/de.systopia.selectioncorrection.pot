@@ -81,6 +81,26 @@ msgstr ""
 msgid "Allows mail"
 msgstr ""
 
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows event invitation (custom)"
+msgstr ""
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows RW (custom)"
+msgstr ""
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Not digital RW (custom)"
+msgstr ""
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows WK (custom)"
+msgstr ""
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows JB (custom)"
+msgstr ""
+
 #: selectioncorrection.php
 msgid "Cleanup"
 msgstr ""
