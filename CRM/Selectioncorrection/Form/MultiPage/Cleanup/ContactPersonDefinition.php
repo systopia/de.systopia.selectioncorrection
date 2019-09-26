@@ -66,14 +66,6 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
         foreach ($contactPersonTree as $organisation => $relationshipTypes)
         {
-            if (empty($relationshipTypes))
-            {
-                // We include organisations with no contact persons directly and therefor we do not need
-                // to include them in the contact person selection list.
-                $directlyToIncludOrganisations[] = $organisation;
-                continue;
-            }
-
             /**
              * @var $idLabelMap A map of option value IDs to labels, used by the select element.
              */
@@ -98,6 +90,14 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
                     $idLabelMap[$optionId] = $optionLabel;
                 }
+            }
+
+            // If the count of ID labels is one, there was not a single contact person added (meaning there was no valid one).
+            // In this case we include the organisation directly and therefor we do not need to show it in the selection list:
+            if (count($idLabelMap) == 1)
+            {
+                $directlyToIncludOrganisations[] = $organisation;
+                continue;
             }
 
             // Image/Info popup for the organisation:
