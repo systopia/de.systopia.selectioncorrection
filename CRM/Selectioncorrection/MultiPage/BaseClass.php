@@ -56,6 +56,12 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
     protected $errors = [];
 
     /**
+     * True if in the validation process has happened any errors.
+     * @var bool $anyErrorHasHappened
+     */
+    protected $anyErrorHasHappened = false;
+
+    /**
      * Do everything needed to initialise the class, especially adding the pages.
      * This function must be overriden by the child class.
      */
@@ -214,7 +220,10 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
             $lastPage->rebuild();
 
             // We can only check for errors after the page has been rebuild...
-            $noErrorsFound = $this->validate();
+            // Furthermore this is the core of validation: Check if there were any internal errors
+            // or page errors found, then set "anyErrorHasHappened" to true for the validate
+            // method called by Civi to know what it shall return.
+            $noErrorsFound = parent::validate() && empty($this->errors);
             if (!$noErrorsFound)
             {
                 // If there were any errors in the core function found, like a required field with
@@ -222,6 +231,8 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
                 // The previous page of the last one has to be rebuild and the last page, rebuild
                 // seconds ago, will be fully build afterwards, overriding the "dummy" elements in
                 // the rebuild function.
+
+                $this->anyErrorHasHappened = true;
 
                 $nextPageName = $lastPageName;
 
@@ -279,14 +290,18 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
 
     public function validate ()
     {
-        $noParentError = parent::validate();
+        // This is a stup. The actual validation has happened in the build method
+        //  and we only show the result here.
 
-        if (!empty($this->errors))
+        if ($this->anyErrorHasHappened)
         {
-            $this->_errors += $this->errors;
+            parent::validate(); // Call the parent to go sure it has been triggered. // FIXME: Necessary?
+            return false;
         }
-
-        return $noParentError && (count($this->_errors) == 0);
+        else
+        {
+            return true;
+        }
     }
 
     public function postProcess ()
