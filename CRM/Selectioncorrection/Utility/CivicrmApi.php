@@ -18,6 +18,19 @@
  */
 class CRM_Selectioncorrection_Utility_CivicrmApi
 {
+    private static function allParametersAreSet ($parameters)
+    {
+        foreach ($parameters as $parameter)
+        {
+            if (empty($parameter))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Generic API call abstraction.
      */
@@ -82,12 +95,9 @@ class CRM_Selectioncorrection_Utility_CivicrmApi
      */
     public static function getValuesChecked ($entity, $additionalParams, $paramValues, $additionOptions=[])
     {
-        foreach ($paramValues as $value)
+        if (!allParametersAreSet($paramValues))
         {
-            if (empty($value))
-            {
-                return [];
-            }
+            return [];
         }
 
         return self::getValues($entity, $additionalParams, $additionOptions);
@@ -101,6 +111,23 @@ class CRM_Selectioncorrection_Utility_CivicrmApi
      */
     public static function create ($entity, $additionalParams=[], $additionOptions=[])
     {
+        return self::call('create', $entity, $additionalParams, $additionOptions);
+    }
+
+    /**
+     * Returns the result of an API create call.
+     * @param string $entity The name of the entity to create.
+     * @param array $additionalParams A list of additional parameters for the API call.
+     * @param array $paramValues A list of all values used in the additional parameters.
+     * @param array $additionOptions A list of additional options for the API call.
+     */
+    public static function createChecked ($entity, $additionalParams=[], $paramValues, $additionOptions=[])
+    {
+        if (!allParametersAreSet($paramValues))
+        {
+            return null;
+        }
+
         return self::call('create', $entity, $additionalParams, $additionOptions);
     }
 }
