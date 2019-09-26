@@ -119,7 +119,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
                 $elementIdentifier ,
                 $elementLabel,
                 $idLabelMap,
-                false,
+                true,
                 [
                     'multiple' => 'multiple',
                     'class' => 'crm-select2 huge',
