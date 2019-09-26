@@ -495,11 +495,14 @@ class CRM_Selectioncorrection_CustomData {
     foreach ($custom_group_names as $custom_group_name) {
       if (!isset(self::$custom_group_cache[$custom_group_name])) {
         // set to empty array to indicate our intentions
+        $table_name = self::getGroupTable($custom_group_name);
         self::$custom_group_cache[$custom_group_name] = array();
         $fields = civicrm_api3('CustomField', 'get', array(
             'custom_group_id' => $custom_group_name,
             'option.limit'    => 0));
+
         foreach ($fields['values'] as $field) {
+          $field['table_name'] = $table_name;
           self::$custom_group_cache[$custom_group_name][$field['name']] = $field;
           self::$custom_group_cache[$custom_group_name][$field['id']]   = $field;
         }
