@@ -18,6 +18,7 @@ use CRM_Selectioncorrection_ExtensionUtil as E;
 class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition extends CRM_Selectioncorrection_MultiPage_PageBase
 {
     private const OptionIdToContactPersonDataMapStorageKey = 'contact_person_definition_option_id_to_contact_person_data_map';
+    private const DirectlyToIncludOrganisationsStorageKey = 'contact_person_defintion_directly_to_include_organisations';
     private const ElementOrganisationMap = 'contact_person_definition_element_organisation_map';
     private const IncludeOrganisationDirectlyIndex = 0;
     private const GroupNameAlreadyInUseError = 'group_name_already_in_use';
@@ -58,8 +59,21 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
          */
         $elementOrganisationMap = [];
 
+        /**
+         * @var string[] $directlyToIncludOrganisations A list of organisations having no valid contact persons and shall therefor be included directly.
+         */
+        $directlyToIncludOrganisations = [];
+
         foreach ($contactPersonTree as $organisation => $relationshipTypes)
         {
+            if (empty($relationshipTypes))
+            {
+                // We include organisations with no contact persons directly and therefor we do not need
+                // to include them in the contact person selection list.
+                $directlyToIncludOrganisations[] = $organisation;
+                continue;
+            }
+
             /**
              * @var $idLabelMap A map of option value IDs to labels, used by the select element.
              */
@@ -124,6 +138,8 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         // they belong to in the process stage. Furthermore, it is used to quickly regenerate the element structure
         // in the rebuild method without having to reprocess any of the above steps:
         CRM_Selectioncorrection_Storage::set(self::ElementOrganisationMap, $elementOrganisationMap);
+
+        CRM_Selectioncorrection_Storage::set(self::DirectlyToIncludOrganisationsStorageKey, $directlyToIncludOrganisations);
 
         $this->pageHandler->setTitle(E::ts('Cleanup contact person selection'));
         // TODO: We could change this to not being called in the build function here but in the BaseClass for
@@ -213,6 +229,14 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
                     }
                 }
             }
+        }
+
+        // Now we also have to include the organisations that shall be directly included
+        // into the organisations list because they have now valid contact persons:
+        $directlyToIncludOrganisations = CRM_Selectioncorrection_Storage::getWithDefault(self::DirectlyToIncludOrganisationsStorageKey, []);
+        foreach ($directlyToIncludOrganisations as $organisationId)
+        {
+            $contactIds[] = $organisationId;
         }
 
         // Make the IDs unique to prevent duplicates:
