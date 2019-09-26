@@ -19,6 +19,7 @@
       <div class="crm-section">
         <div class="label">{$form.$identifier.label}</div>
         <div class="content">{$form.$identifier.html}</div>
+        <div class="clear"></div>
       </div>
     {/foreach}
     <div class="clear"></div>
