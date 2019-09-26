@@ -157,6 +157,16 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
     {
         parent::buildQuickForm();
 
+        $rawValues = $this->getFilteredExportValues(null, false);
+        if (array_key_exists('_qf_Cleanup_back', $rawValues))
+        {
+            // If the key "_qf_Cleanup_back" is set, the back button has been pressed.
+            // Civi will always send the user back to the search result when this happens. (Wasted hours trying to prevent this: 1.5)
+            // So the only choice left is to not render or process the page at all, otherwise the back button would disastrously
+            // become a second next button on the last page, resulting in a finished process the user tried to stop...
+            return;
+        }
+
         /**
          * Array holding the default values for every element.
          * Will be set at the end of the function.
