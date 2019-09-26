@@ -22,7 +22,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
     public const PageName = 'preselection';
     protected $name = self::PageName;
 
-    public function build (&$defaults)
+    public function build (&$defaults, $isRebuild=false)
     {
         $filterHandler = CRM_Selectioncorrection_FilterHandler::getSingleton();
         $filters = $filterHandler->getFilters();
@@ -52,7 +52,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
             CRM_Selectioncorrection_Config::RelationshipTypeElementIdentifier,
             E::ts('Relationship types for contact persons'),
             CRM_Selectioncorrection_Utility_Relationships::getIndividualOrganisationRelationships(),
-            true,
+            !$isRebuild, // Only a required field if this is no rebuild to not produce false erros in the validation of the next page.
             ['multiple' => true]
         );
 
@@ -62,7 +62,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
             self::GroupTitleElementIdentifier,
             E::ts('Group title'),
             null,
-            true
+            !$isRebuild // Only a required field if this is no rebuild to not produce false erros in the validation of the next page.
         );
 
         $this->pageHandler->setTitle(E::ts('Cleanup preparation'));
@@ -74,7 +74,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
     {
         // Build is fast, so we can call it and ignore the defaults.
         $defaults = [];
-        $this->build($defaults);
+        $this->build($defaults, true);
     }
 
     public function validate (&$errors)
