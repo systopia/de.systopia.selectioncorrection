@@ -25,7 +25,10 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
 
     public function __construct ()
     {
-        $identifier = preg_replace('/\s/', '', $this->name); // Removes all spacelike characters.
+        // Replace all non-word (not letters, numbers or underscore) with an underscore.
+        // This is needed for it to be an universal identifier usable in HTML and other things.
+        $identifier = preg_replace('/[^\w]+/', '_', $this->name);
+
         $identifier = strtolower($identifier);
         $identifier = 'filter_' . $identifier;
 
