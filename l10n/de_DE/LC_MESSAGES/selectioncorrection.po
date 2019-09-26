@@ -17,13 +17,21 @@ msgstr ""
 "X-Generator: Poedit 2.0.6\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: CRM/Selectioncorrection/Filter/BulkmailSet.php
+msgid "Bulkmail set"
+msgstr "Massenmailzustellung gestattet"
+
+#: CRM/Selectioncorrection/Filter/NotInGroup.php
+msgid "Not in a group"
+msgstr "Ist nicht in einer Gruppe"
+
 #: CRM/Selectioncorrection/Form/MultiPage/Cleanup/ContactPersonDefinition.php
 msgid "direct"
-msgstr "selbst"
+msgstr "direkt"
 
 #: CRM/Selectioncorrection/Form/MultiPage/Cleanup/ContactPersonDefinition.php
 msgid "Cleanup contact person selection"
-msgstr "Bereinigung der Ansprechpartner"
+msgstr "Auswahl der Ansprechpartner"
 
 #: CRM/Selectioncorrection/Form/MultiPage/Cleanup/Preselection.php
 msgid "Relationship types for contact persons"
@@ -31,11 +39,15 @@ msgstr "Beziehungsarten für Ansprechpartner"
 
 #: CRM/Selectioncorrection/Form/MultiPage/Cleanup/Preselection.php
 msgid "Group title"
-msgstr "Grupenname"
+msgstr "Gruppenname"
 
 #: CRM/Selectioncorrection/Form/MultiPage/Cleanup/Preselection.php
 msgid "Cleanup preparation"
 msgstr "Vorbereitung der Bereinigung"
+
+#: CRM/Selectioncorrection/Form/MultiPage/Cleanup/Preselection.php
+msgid "A group with '%1' as name or title already exists."
+msgstr "Eine Gruppe mit dem Namen oder Titel „%1“ existiert bereits."
 
 #: CRM/Selectioncorrection/Form/Task/Cleanup.php
 msgid "Export Successful"
@@ -46,7 +58,7 @@ msgid ""
 "Someone created the group '%1' in the background. Please rename it or go "
 "back and choose another group title."
 msgstr ""
-"Die Gruppe '%1' wurde in der Zwischenzeit anderweitig erstellt. Bitte "
+"Die Gruppe „%1“ wurde in der Zwischenzeit anderweitig erstellt. Bitte "
 "umbenennen oder einen anderen Namen wählen."
 
 #: CRM/Selectioncorrection/Form/Task/Cleanup.php
@@ -54,27 +66,35 @@ msgid "You can export the results <a href=\"%1\">HERE</a>."
 msgstr "Sie können das Ergebnis <a href=\"%1\">HIER</a> exportieren."
 
 #: CRM/Selectioncorrection/MultiPage/BaseClass.php
-msgid "Set"
-msgstr ""
+msgid "Finish"
+msgstr "Fertig"
 
 #: CRM/Selectioncorrection/MultiPage/BaseClass.php
-msgid "Filter"
-msgstr "Filter"
+msgid "Next"
+msgstr "Weiter"
 
 #: CRM/Selectioncorrection/Upgrader/Base.php
 msgid "Upgrade %1 to revision %2"
-msgstr ""
+msgstr "Aktualisiere %1 auf Revision %2."
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Is not deceased"
+msgstr "Nicht verstorben"
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows email"
+msgstr "E-Mailkontakt gestattet"
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Allows mail"
+msgstr "Postalischer Kontakt gestattet"
 
 #: selectioncorrection.php
 msgid "Cleanup"
 msgstr "Bereinigung"
 
 #: templates/CRM/Selectioncorrection/Form/Task/Cleanup.tpl
-msgid "Contact person selection:"
-msgstr "Auswahl der Ansprechpartner"
-
-#: templates/CRM/Selectioncorrection/Form/Task/Cleanup.tpl
 msgid "There were no organisations found. Click the button to continue."
 msgstr ""
-"Es wurden keine Organisationen in der Auswahl gefunden. Bitte weiter "
+"Es wurden keine Organisationen in der Auswahl gefunden. Bitte „Fertig“ "
 "drücken."

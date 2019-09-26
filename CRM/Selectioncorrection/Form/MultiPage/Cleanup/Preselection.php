@@ -50,7 +50,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
         $this->pageHandler->add(
             'select',
             CRM_Selectioncorrection_Config::RelationshipTypeElementIdentifier,
-            ts('Relationship types for contact persons'),
+            E::ts('Relationship types for contact persons'),
             CRM_Selectioncorrection_Utility_Relationships::getIndividualOrganisationRelationships(),
             true,
             ['multiple' => true]
@@ -60,7 +60,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
         $this->pageHandler->add(
             'text',
             self::GroupTitleElementIdentifier,
-            ts('Group title'),
+            E::ts('Group title'),
             null,
             true
         );

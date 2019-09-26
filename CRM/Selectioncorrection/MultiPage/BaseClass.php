@@ -266,12 +266,11 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
         // Set next/submit page buttons:
         if ($nextPageName == $this->finalPageName)
         {
-            CRM_Core_Form::addDefaultButtons(E::ts("Set"));
-            // FIXME: Back button does not work here because of our multi page system.
+            CRM_Core_Form::addDefaultButtons(E::ts('Finish'));
         }
         else if (!empty($nextPageName))
         {
-            CRM_Core_Form::addDefaultButtons(E::ts("Filter"), 'submit');
+            CRM_Core_Form::addDefaultButtons(E::ts('Next'), 'submit');
         }
 
         // Finally, set the defaults:
