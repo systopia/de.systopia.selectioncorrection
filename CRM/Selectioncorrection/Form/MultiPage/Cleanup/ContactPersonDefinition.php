@@ -149,7 +149,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
             $errorValues = [1 => $groupTitle];
             $errorMessage = E::ts("Someone created the group '%1' in the background. Please rename it or go back and choose another group title.", $errorValues);
 
-            $errors[self::GroupTitleElementIdentifier] = $errorMessage;
+            $errors[CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection::GroupTitleElementIdentifier] = $errorMessage;
 
             return false;
         }
