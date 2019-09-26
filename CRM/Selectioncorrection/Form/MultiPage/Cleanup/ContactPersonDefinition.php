@@ -20,6 +20,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
     private const OptionIdToContactPersonDataMapStorageKey = 'contact_person_definition_option_id_to_contact_person_data_map';
     private const ElementOrganisationMap = 'contact_person_definition_element_organisation_map';
     private const IncludeOrganisationDirectlyIndex = 0;
+    private const GroupNameAlreadyInUseError = 'group_name_already_in_use';
 
     public const PageName = 'contact_person_definition';
     protected $name = self::PageName;
@@ -149,7 +150,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
             $errorValues = [1 => $groupTitle];
             $errorMessage = E::ts("Someone created the group '%1' in the background. Please rename it or go back and choose another group title.", $errorValues);
 
-            $errors[self::GroupTitleElementIdentifier] = $errorMessage;
+            $errors[self::GroupNameAlreadyInUseError] = $errorMessage;
 
             return false;
         }
