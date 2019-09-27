@@ -56,13 +56,12 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
     // add relationship joins (both ways)
     $relationship_a_alias = $this->getAlias('relationship_a');
     $relationship_b_alias = $this->getAlias('relationship_b');
-    $joins[] = "LEFT JOIN civicrm_relationship {$relationship_a_alias} ON {$relationship_a_alias}.contact_id_a = {$metadata_alias}.contact_id";
-    $joins[] = "LEFT JOIN civicrm_relationship {$relationship_b_alias} ON {$relationship_b_alias}.contact_id_b = {$metadata_alias}.contact_id";
+    $joins[] = "LEFT JOIN civicrm_relationship {$relationship_a_alias} ON {$relationship_a_alias}.id = {$metadata_alias}.relationship_id AND {$relationship_a_alias}.contact_id_a = {$metadata_alias}.contact_id";
+    $joins[] = "LEFT JOIN civicrm_relationship {$relationship_b_alias} ON {$relationship_a_alias}.id = {$metadata_alias}.relationship_id AND {$relationship_b_alias}.contact_id_b = {$metadata_alias}.contact_id";
 
     // add other contact join
     $related_contact_alias = $this->getAlias('related_contact');
     $joins[] = "LEFT JOIN civicrm_contact {$related_contact_alias} ON {$related_contact_alias}.id = COALESCE({$relationship_a_alias}.contact_id_b, {$relationship_b_alias}.contact_id_a)";
-
 
     // add ADDRESS: picked from option
     //  no relation: contact.primary
