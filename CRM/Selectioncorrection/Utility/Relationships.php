@@ -31,8 +31,9 @@ class CRM_Selectioncorrection_Utility_Relationships
         $individualOrganisationRelationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValues(
             'RelationshipType',
             [
-                'contact_type_a' => "Individual",
-                'contact_type_b' => "Organization",
+                // DISABLED: all contact types (empty field) not considered
+//                'contact_type_a' => "Individual",
+//                'contact_type_b' => "Organization",
                 'return' => [
                     "id",
                     "label_a_b"
@@ -45,22 +46,22 @@ class CRM_Selectioncorrection_Utility_Relationships
             $relationshipMap[$relationship['id']] = $relationship['label_a_b'];
         }
 
-        $organisationIndividualRelationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValues(
-            'RelationshipType',
-            [
-                'contact_type_a' => "Organization",
-                'contact_type_b' => "Individual",
-                'return' => [
-                    "id",
-                    "label_b_a"
-                ],
-            ]
-        );
-
-        foreach ($organisationIndividualRelationships as $relationship)
-        {
-            $relationshipMap[$relationship['id']] = $relationship['label_b_a'];
-        }
+//        $organisationIndividualRelationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValues(
+//            'RelationshipType',
+//            [
+//                'contact_type_a' => "Organization",
+//                'contact_type_b' => "Individual",
+//                'return' => [
+//                    "id",
+//                    "label_b_a"
+//                ],
+//            ]
+//        );
+//
+//        foreach ($organisationIndividualRelationships as $relationship)
+//        {
+//            $relationshipMap[$relationship['id']] = $relationship['label_b_a'];
+//        }
 
         return $relationshipMap;
     }
