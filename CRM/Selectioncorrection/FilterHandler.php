@@ -37,7 +37,7 @@ class CRM_Selectioncorrection_FilterHandler
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows email', 'do_not_email'),
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows mail', 'do_not_mail'),
             new CRM_Selectioncorrection_Filter_BulkmailSet(),
-            new CRM_Selectioncorrection_Filter_NotInGroup(),
+            //new CRM_Selectioncorrection_Filter_NotInGroup(),  // DISABLED FOR NOW.
             new CRM_Selectioncorrection_Filter_CustomFieldNotSet('Allows event invitation (custom)', 'besonderheiten', 'bes_29883'),
             new CRM_Selectioncorrection_Filter_CustomFieldNotSet('Allows RW (custom)', 'besonderheiten', 'bes_30170'),
             new CRM_Selectioncorrection_Filter_CustomFieldNotSet('Not digital RW (custom)', 'besonderheiten', 'bes_30186'),
