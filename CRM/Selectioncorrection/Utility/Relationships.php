@@ -83,8 +83,8 @@ class CRM_Selectioncorrection_Utility_Relationships
        foreach ($result as $relationshipType)
        {
            $label = '';
-           // We use the label that descripes the relationship from the individual view:
-           if ($relationshipType['contact_type_a'] == 'Individual')
+           // We use the label that describes the relationship from the individual view:
+           if (CRM_Utils_Array::value('contact_type_a', $relationshipType, 'Individual') == 'Individual')
            {
                $label = $relationshipType['label_a_b'];
            }
