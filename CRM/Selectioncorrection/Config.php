@@ -63,4 +63,13 @@ class CRM_Selectioncorrection_Config
     {
         CRM_Core_BAO_Setting::setItem($settings, 'de.systopia.selectioncorrection', 'selectioncorrection_settings');
     }
+
+    /**
+     * Get the list of relationship type IDs that should be offered in the cleanup routine
+     * @return array list of IDs
+     */
+    public static function getRelationshipTypeIDS() {
+      // FIXME: move to config
+      return [12,19,20];
+    }
 }

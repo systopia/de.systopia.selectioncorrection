@@ -19,8 +19,8 @@
 class CRM_Selectioncorrection_Utility_Relationships
 {
     /**
-     * Gets relationships of which one contact must be an individual and the other on an organisation.
-     * Returns both individual-organisation and organisation-individual relationships.
+     * Gets the list of eligible relationship as defined by the configuration
+     *
      * @return array A map of "relationship type id" => "relationship label", with the label being the
      *               the one for the individual-organisation perspective.
      */
@@ -28,40 +28,26 @@ class CRM_Selectioncorrection_Utility_Relationships
     {
         $relationshipMap = [];
 
-        $individualOrganisationRelationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValues(
-            'RelationshipType',
-            [
-                // DISABLED: all contact types (empty field) not considered
-//                'contact_type_a' => "Individual",
-//                'contact_type_b' => "Organization",
-                'return' => [
-                    "id",
-                    "label_a_b"
-                ],
-            ]
-        );
+        $relationship_type_ids = CRM_Selectioncorrection_Config::getRelationshipTypeIDS();
+        if ($relationship_type_ids) {
 
-        foreach ($individualOrganisationRelationships as $relationship)
-        {
+          $individualOrganisationRelationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValues(
+              'RelationshipType',
+              [
+                  'id' => ['IN' => $relationship_type_ids],
+                  'return' => [
+                      "id",
+                      "label_a_b"
+                  ],
+              ]
+          );
+
+          foreach ($individualOrganisationRelationships as $relationship)
+          {
             $relationshipMap[$relationship['id']] = $relationship['label_a_b'];
-        }
+          }
 
-//        $organisationIndividualRelationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValues(
-//            'RelationshipType',
-//            [
-//                'contact_type_a' => "Organization",
-//                'contact_type_b' => "Individual",
-//                'return' => [
-//                    "id",
-//                    "label_b_a"
-//                ],
-//            ]
-//        );
-//
-//        foreach ($organisationIndividualRelationships as $relationship)
-//        {
-//            $relationshipMap[$relationship['id']] = $relationship['label_b_a'];
-//        }
+        }
 
         return $relationshipMap;
     }
