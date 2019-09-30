@@ -266,7 +266,7 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
 
             $this->assign(self::CurrentPageIdentifier, $nextPageName);
         }
-        else
+        else if (!$this->anyErrorHasHappened)
         {
             // If there is no next page, this was the last one and we need to call the final process:
             $this->doFinalProcess();
@@ -295,7 +295,8 @@ abstract class CRM_Selectioncorrection_MultiPage_BaseClass extends CRM_Contact_F
 
         if ($this->anyErrorHasHappened)
         {
-            parent::validate(); // Call the parent to go sure it has been triggered. // FIXME: Necessary?
+            $this->_errors += $this->errors;
+
             return false;
         }
         else
