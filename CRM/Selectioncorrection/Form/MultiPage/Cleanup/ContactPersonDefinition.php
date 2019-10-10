@@ -21,6 +21,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
     private const DirectlyToIncludOrganisationsStorageKey = 'contact_person_defintion_directly_to_include_organisations';
     private const ElementOrganisationMap = 'contact_person_definition_element_organisation_map';
     private const IncludeOrganisationDirectlyIndex = 0;
+    private const IncludeContactDirectlyIndicator = 0;
     private const GroupNameAlreadyInUseError = 'group_name_already_in_use';
 
     public const PageName = 'contact_person_definition';
@@ -244,6 +245,11 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
         CRM_Selectioncorrection_Storage::set(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, $contactIds);
 
+        // We will need the full filtered contact list to determine if contact persons were also in the initial search result.
+        $filteredContactIds = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactsStorageKey, []);
+        // Make a key list out of them for faster search:
+        $filteredContactIdsAsKeys = array_flip($filteredContactIds);
+
         // Create the meta data for every filtered selected contact's relationships:
         $metaData = [];
         foreach ($contactIds as $contactId)
@@ -256,6 +262,16 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
                     $metaData[] = [
                         'contact_id' => $contactId,
                         'relationship_id' => $relationshipId,
+                    ];
+                }
+
+                // If the contact was in the initial search result, we must include it, too, for the exporter
+                // to know that this contact must be included again with its private things:
+                if (array_key_exists($contactId, $filteredContactIdsAsKeys))
+                {
+                    $metaData[] = [
+                        'contact_id' => $contactId,
+                        'relationship_id' => self::IncludeContactDirectlyIndicator,
                     ];
                 }
             }
