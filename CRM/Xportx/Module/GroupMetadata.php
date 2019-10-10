@@ -76,7 +76,7 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
 
     // join the final address
     $address_alias = $this->getAlias('address');
-    $joins[] = "LEFT JOIN civicrm_address {$address_alias} ON {$address_alias}.id = 
+    $joins[] = "LEFT JOIN civicrm_address {$address_alias} ON {$address_alias}.id =
       COALESCE(
         IF({$related_contact_alias}.id IS NULL,     {$address_option1_alias}.id, NULL),
         IF({$related_contact_alias}.id IS NOT NULL, {$address_option2_alias}.id, NULL),
