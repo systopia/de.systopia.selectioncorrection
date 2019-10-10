@@ -20,6 +20,8 @@ use CRM_Xportx_ExtensionUtil as E;
  */
 class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
 
+  protected static $group_by_issued = FALSE;
+
   /**
    * This module can do with any base_table
    * (as long as it has a contact_id column)
@@ -117,6 +119,22 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
         // the default is a column from the contact table
         $selects[] = "{$related_contact}.{$field_name} AS {$value_prefix}{$field_name}";
       }
+    }
+  }
+
+  /**
+   * Add group clauses to the generic one
+   *
+   * @return array clauses
+   */
+  public function getGroupClauses() {
+    if (self::$group_by_issued) {
+      // group by already used by other instance
+      return [];
+    } else {
+      self::$group_by_issued = TRUE;
+      $metadata_alias = $this->getAlias('metadata');
+      return ["{$metadata_alias}.relationship_id"];
     }
   }
 
