@@ -1,7 +1,7 @@
 <?php
 /*-------------------------------------------------------+
-| SYSTOPIA EXTENSIBLE EXPORT EXTENSION                   |
-| Copyright (C) 2018 SYSTOPIA                            |
+| SYSTOPIA MULTI PURPOSE SELECTION CLEANUPS                 |
+| Copyright (C) 2019 SYSTOPIA                            |
 | Author: B. Endres (endres@systopia.de)                 |
 +--------------------------------------------------------+
 | This program is released as free software under the    |
