@@ -233,8 +233,8 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
 
         // Now we also have to include the organisations that shall be directly included
         // into the organisations list because they have now valid contact persons:
-        $directlyToIncludOrganisations = CRM_Selectioncorrection_Storage::getWithDefault(self::DirectlyToIncludOrganisationsStorageKey, []);
-        foreach ($directlyToIncludOrganisations as $organisationId)
+        $directlyToIncludeOrganisations = CRM_Selectioncorrection_Storage::getWithDefault(self::DirectlyToIncludOrganisationsStorageKey, []);
+        foreach ($directlyToIncludeOrganisations as $organisationId)
         {
             $contactIds[] = $organisationId;
         }
