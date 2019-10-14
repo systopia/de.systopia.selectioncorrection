@@ -222,4 +222,58 @@ class CRM_Selectioncorrection_HouseholdCorrection
 
         return $correctedContactIds;
     }
+
+    /**
+     * From the contact list given, extract all individuals whose household is in the list as well and return them.
+     * @param string[] $individualIds
+     * @param string[] $householdIds
+     * @return string[] The list of individuals that
+     */
+    public function getIndividualsWithHouseholdPresent ($individualIds, $householdIds)
+    {
+        // Get all active relationships for the individuals to their households:
+        $relationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
+            'Relationship',
+            [
+                'return' => [
+                    'contact_id_a',
+                    'contact_id_b',
+                ],
+                'relationship_type_id' => [
+                    'IN' => $this->householdRelationshipTypeIds
+                ],
+                'contact_id_a' => [
+                    'IN' => $individualIds
+                ],
+                'is_active' => 1,
+            ],
+            [
+                $individualIds,
+                $this->householdRelationshipTypeIds
+            ]
+        );
+
+        // We need the households as keys for a well-performaning check if they exist in the list:
+        $householdIdsAsKeys = array_flip($householdIds);
+
+        // Now check for every member if one of their households is the households list:
+        $individualsWithHouseholdPresent = [];
+        foreach ($relationships as $relationship)
+        {
+            $individualId = $relationship['contact_id_a'];
+            $householdId = $relationship['contact_id_b'];
+
+            if (array_key_exists($householdId, $householdIdsAsKeys))
+            {
+                $individualsWithHouseholdPresent[] = $individualId;
+            }
+        }
+
+        // Finally make every entry unique to prevent duplicate IDs:
+        // NOTE: This is not necessary as the group->add method goes sure that there are no duplicates
+        //       and the API call later does this, too... but it's cleaner...
+        $individualsWithHouseholdPresent = array_unique($individualsWithHouseholdPresent);
+
+        return $individualsWithHouseholdPresent;
+    }
 }

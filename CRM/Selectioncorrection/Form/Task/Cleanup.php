@@ -55,6 +55,9 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
         $correctedContacts = $householdCorrection->addHouseholdsWithMultipleMembersPresent($individualContacts);
         $group->add($correctedContacts);
 
+        $contactsToBeRemoved = $householdCorrection->getIndividualsWithHouseholdPresent($individualContacts, $householdContacts);
+        $group->remove($contactsToBeRemoved);
+
         $filteredContactPersons = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, []);
         $contactPersonsMetaData = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::ContactPersonsMetaDataStorageKey, []);
 
