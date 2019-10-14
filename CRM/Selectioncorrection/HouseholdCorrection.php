@@ -13,6 +13,7 @@
 | written permission from the original author(s).        |
 +--------------------------------------------------------*/
 
+// TODO: A lot of things here could be unitified and outsourced into their own functions, thus be used multiple times.
 class CRM_Selectioncorrection_HouseholdCorrection
 {
     private static $singleton = NULL;
@@ -58,12 +59,11 @@ class CRM_Selectioncorrection_HouseholdCorrection
      * Removes households from the list where there is only one or less individuals with an active
      * household relationship that complains to the active filters. If the household is removed
      * and there is such an individual that isn't already in the list, it is added.
-     * @return string[] The list of corrected IDs.
+     * @param string[] $householdIds A list of IDs that contains ONLY the households that shall be corrected.
+     * @return string[] The list of corrected IDs (both households and individuals).
      */
-    public function removeSinglePersonHouseholds ($contactIds)
+    public function removeSinglePersonHouseholds ($householdIds)
     {
-        $householdIds = CRM_Selectioncorrection_Utility_Contacts::getHouseholdsFromContacts($contactIds);
-
         // Get all active relationships for the households:
         $relationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
             'Relationship',
@@ -139,10 +139,12 @@ class CRM_Selectioncorrection_HouseholdCorrection
         }
 
         // Remove the to be deleted IDs from the contact IDs:
-        $correctedContactIds = array_diff($contactIds, $toBeDeletedIds);
+        $correctedContactIds = array_diff($householdIds, $toBeDeletedIds);
         // Add the to be added IDs to the corrected contact IDs:
         $correctedContactIds = array_merge($correctedContactIds, $toBeAddedIds);
         // Finally make every entry unique to prevent duplicate IDs:
+        // NOTE: This is not necessary as the group->add method goes sure that there are no duplicates
+        //       and the API call later does this, too... but it's cleaner...
         $correctedContactIds = array_unique($correctedContactIds);
 
         return $correctedContactIds;
@@ -151,13 +153,12 @@ class CRM_Selectioncorrection_HouseholdCorrection
     /**
      * If there are multiple individuals in the contact list with an active relationship to the
      * same household, they are removed and the household is added instead.
-     * @return string[] The list of corrected IDs.
+     * @param string[] $individualIds A list of IDs that contains ONLY the individuals that shall be corrected.
+     * @return string[] The list of corrected IDs (both individuals and households).
      */
-    public function addHouseholdsWithMultipleMembersPresent ($contactIds)
+    public function addHouseholdsWithMultipleMembersPresent ($individualIds)
     {
-        $individualIDs = CRM_Selectioncorrection_Utility_Contacts::getIndividualsFromContacts($contactIds);
-
-        // Get all active relationships for the households:
+        // Get all active relationships for the individuals to their households:
         $relationships = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
             'Relationship',
             [
@@ -169,12 +170,12 @@ class CRM_Selectioncorrection_HouseholdCorrection
                     'IN' => $this->householdRelationshipTypeIds
                 ],
                 'contact_id_a' => [
-                    'IN' => $individualIDs
+                    'IN' => $individualIds
                 ],
                 'is_active' => 1,
             ],
             [
-                $individualIDs,
+                $individualIds,
                 $this->householdRelationshipTypeIds
             ]
         );
@@ -211,10 +212,12 @@ class CRM_Selectioncorrection_HouseholdCorrection
         }
 
         // Remove the to be deleted IDs from the contact IDs:
-        $correctedContactIds = array_diff($contactIds, $toBeDeletedIds);
+        $correctedContactIds = array_diff($individualIds, $toBeDeletedIds);
         // Add the to be added IDs to the corrected contact IDs:
         $correctedContactIds = array_merge($correctedContactIds, $toBeAddedIds);
         // Finally make every entry unique to prevent duplicate IDs:
+        // NOTE: This is not necessary as the group->add method goes sure that there are no duplicates
+        //       and the API call later does this, too... but it's cleaner...
         $correctedContactIds = array_unique($correctedContactIds);
 
         return $correctedContactIds;

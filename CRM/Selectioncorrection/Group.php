@@ -98,7 +98,7 @@ class CRM_Selectioncorrection_Group
 
     /**
      * Add a list of contacts to the group.
-     * Attention: This is an in-memory action. You need to call "save" to save them permanently in Civi.
+     * NOTE: This is an in-memory action. You need to call "save" to save them permanently in Civi.
      */
     public function add ($contactList)
     {
