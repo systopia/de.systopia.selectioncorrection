@@ -106,6 +106,24 @@ class CRM_Selectioncorrection_Group
     }
 
     /**
+     * Remove a list of contacts from the group.
+     * NOTE: This is an in-memory action. You need to call "save" to save them permanently in Civi.
+     */
+    public function remove ($contactList)
+    {
+        $this->contactList = array_diff($this->contactList, $contactList);
+    }
+
+    /**
+     * Get the current contact list.
+     * NOTE: This is the in-memory list, NOT the one from Civi!
+     */
+    public function get ()
+    {
+        return $this->contactList;
+    }
+
+    /**
      * Save the group permanently to Civi.
      */
     public function save ()
