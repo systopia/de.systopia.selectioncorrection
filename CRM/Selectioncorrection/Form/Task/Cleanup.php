@@ -61,21 +61,6 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
         $group->add($filteredContactPersons);
         $metaData->add($contactPersonsMetaData);
 
-        // Every filtered contact person that is also a corrected contact must have a special meta data entry
-        // for the exporter to know that it must include it twice; once for each role it has:
-        $contactIntersection = array_intersect($filteredContactPersons, $correctedContacts);
-
-        $intersectionMetaData = [];
-        foreach ($contactIntersection as $contactId)
-        {
-            $intersectionMetaData[] = [
-                'contact_id' => $contactId,
-                'relationship_id' => self::ContactPersonAndCorrectedContactIntersectionIndicator,
-            ];
-        }
-
-        $metaData->add($intersectionMetaData);
-
         $group->save();
         $metaData->setGroupId($group->getGroupId());
         $metaData->save();
