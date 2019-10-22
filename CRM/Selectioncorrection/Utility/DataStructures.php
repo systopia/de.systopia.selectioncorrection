@@ -21,14 +21,12 @@ class CRM_Selectioncorrection_Utility_DataStructures
     /**
      * Generates a tree of the following structure:
      *     organisationId -> relationshipTypeId -> [contactId, relationshipId]
-     * @param string[] $contactIds A list of all contact IDs that shall be used for generating the tree.
+     * @param string[] $organisationIds A list of all organisation IDs that shall be used for generating the tree.
      * @param string[] $relationshipIds A list of all relationship IDs that define a contact person relationship.
      * @return array Containts four objects: 'tree', 'contactPersonIds' and 'organisationIds'. The last two have unique values.
      */
-    static function getOrganisationRelationshipContactPersonTree ($contactIds, $relationshipIds)
+    static function getOrganisationRelationshipContactPersonTree ($organisationIds, $relationshipIds)
     {
-        $organisationIds = CRM_Selectioncorrection_Utility_Contacts::getOrganisationsFromContacts($contactIds);
-
         // Get all contacts from relationships with these organisations:
         $result = CRM_Selectioncorrection_Utility_CivicrmApi::getValuesChecked(
             'Relationship',

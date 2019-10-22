@@ -31,9 +31,11 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
         $values = $this->pageHandler->getPageValues(CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection::PageName);
 
         $relationshipIds = $values[CRM_Selectioncorrection_Config::RelationshipTypeElementIdentifier];
-        $contactIds = $this->pageHandler->_contactIds;
 
-        $treeData = CRM_Selectioncorrection_Utility_DataStructures::getOrganisationRelationshipContactPersonTree($contactIds, $relationshipIds);
+        $filteredContactIds = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactsStorageKey, []);
+        $filteredOrganisationIds = CRM_Selectioncorrection_Utility_Contacts::getOrganisationsFromContacts($filteredContactIds);
+
+        $treeData = CRM_Selectioncorrection_Utility_DataStructures::getOrganisationRelationshipContactPersonTree($filteredOrganisationIds, $relationshipIds);
 
         $contactPersonTree = $treeData['tree'];
         $organisationIds = $treeData['organisationIds'];
