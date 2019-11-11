@@ -52,7 +52,7 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_Preselection extends CRM_Se
             CRM_Selectioncorrection_Config::RelationshipTypeElementIdentifier,
             E::ts('Relationship types for contact persons'),
             CRM_Selectioncorrection_Utility_Relationships::getIndividualOrganisationRelationships(),
-            true,
+            false,
             ['multiple' => true]
         );
 
