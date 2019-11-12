@@ -34,7 +34,7 @@ cj(document).ready(
                 }
             );
 
-            // We must trigger the change fort the select2 field to update visually:
+            // We must trigger the change for the select2 field to update visually:
             contactPersonSelectionElement.trigger('change');
         }
 
