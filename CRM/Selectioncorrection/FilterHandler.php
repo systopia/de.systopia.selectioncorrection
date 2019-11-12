@@ -35,7 +35,10 @@ class CRM_Selectioncorrection_FilterHandler
         $this->filters = [
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Is not deceased', 'is_deceased', false),
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows email', 'do_not_email'),
+            new CRM_Selectioncorrection_Filter_HasDataInAssociatedTable('Has email address', 'civicrm_email', 'email'),
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows mail', 'do_not_mail'),
+            // FIXME: The following filter is insufficient. A street address is not enough for postal mailing.
+            new CRM_Selectioncorrection_Filter_HasDataInAssociatedTable('Has mail address', 'civicrm_address', 'street_address'),
             new CRM_Selectioncorrection_Filter_BulkmailSet(),
             //new CRM_Selectioncorrection_Filter_NotInGroup(),  // DISABLED FOR NOW.
             new CRM_Selectioncorrection_Filter_CustomFieldNotSet('Allows event invitation (custom)', 'besonderheiten', 'bes_29883'),
