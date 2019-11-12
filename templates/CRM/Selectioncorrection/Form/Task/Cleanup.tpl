@@ -43,15 +43,16 @@
           <span id="contact_person_quick_setting_all" class="crm-button contact-person-button">
             <input value="{ts}Set all contact persons and organisations.{/ts}" type="button" class="crm-form-submit cancel">
           </span>
-          <br><br>
+          <br><br><br>
           <span id="contact_person_quick_setting_contact_persons_only" class="crm-button contact-person-button">
             <input value="{ts}Set all contact persons.{/ts}" type="button" class="crm-form-submit cancel">
           </span>
-          <br><br>
+          <br><br><br>
           <span id="contact_person_quick_setting_organisations_only" class="crm-button contact-person-button">
             <input value="{ts}Set all organisations.{/ts}" type="button" class="crm-form-submit cancel">
           </span>
           <br><br><br>
+          <div class="clear"></div>
         </div>
       </div>
       {foreach key=element_identifier item=organisation_id from=$contact_person_definition_element_organisation_map}
