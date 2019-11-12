@@ -108,3 +108,19 @@ msgstr ""
 #: templates/CRM/Selectioncorrection/Form/Task/Cleanup.tpl
 msgid "There were no organisations found. Click the button to continue."
 msgstr ""
+
+#: templates/CRM/Selectioncorrection/Form/Task/Cleanup.tpl
+msgid "Quick setting"
+msgstr ""
+
+#: templates/CRM/Selectioncorrection/Form/Task/Cleanup.tpl
+msgid "Set all contact persons and organisations."
+msgstr ""
+
+#: templates/CRM/Selectioncorrection/Form/Task/Cleanup.tpl
+msgid "Set all contact persons."
+msgstr ""
+
+#: templates/CRM/Selectioncorrection/Form/Task/Cleanup.tpl
+msgid "Set all organisations."
+msgstr ""

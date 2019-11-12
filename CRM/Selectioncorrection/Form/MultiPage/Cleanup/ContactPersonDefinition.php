@@ -124,10 +124,13 @@ class CRM_Selectioncorrection_Form_MultiPage_Cleanup_ContactPersonDefinition ext
                 true,
                 [
                     'multiple' => 'multiple',
-                    'class' => 'crm-select2 huge',
+                    'class' => 'crm-select2 huge contact-person-selection',
                 ]
             );
         }
+
+        CRM_Core_Resources::singleton()->addScriptFile('de.systopia.selectioncorrection', 'js/contactPersonDefinition.js');
+        CRM_Core_Resources::singleton()->addStyleFile('de.systopia.selectioncorrection', 'css/contactPersonDefinition.css');
 
         // The element organisation map is used in Smarty as an element list for rendering.
         $this->pageHandler->assign(self::ElementOrganisationMap, $elementOrganisationMap);

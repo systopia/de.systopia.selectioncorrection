@@ -34,6 +34,26 @@
     </div>
   {elseif $current_page == 'contact_person_definition'}
     {if $contact_person_definition_element_organisation_map}
+      <div>
+        <div class="label">
+          {ts}Quick setting{/ts}
+        </div>
+        <div class="content">
+          <br>
+          <span id="contact_person_quick_setting_all" class="crm-button contact-person-button">
+            <span>{ts}Set all contact persons and organisations.{/ts}</span>
+          </span>
+          <br><br>
+          <span id="contact_person_quick_setting_contact_persons_only" class="crm-button contact-person-button">
+            <span>{ts}Set all contact persons.{/ts}</span>
+          </span>
+          <br><br>
+          <span id="contact_person_quick_setting_organisations_only" class="crm-button contact-person-button">
+            <span>{ts}Set all organisations.{/ts}</span>
+          </span>
+          <br><br><br>
+        </div>
+      </div>
       {foreach key=element_identifier item=organisation_id from=$contact_person_definition_element_organisation_map}
         <div>
           <div class="label">{$form.$element_identifier.label}</div>
