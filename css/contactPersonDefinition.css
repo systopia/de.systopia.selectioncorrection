@@ -1,7 +1,10 @@
 .contact-person-button {
-    margin-bottom: 0.5em;
+    margin-bottom: 0.5em !important;
+    margin-left: 0.2em !important;
+    clear: both;
 }
 
 .contact-person-button input {
-    padding: 3px 5px 2px;
+    padding: 3px 5px 2px !important;
+    text-transform: none !important;
 }
