@@ -86,8 +86,16 @@ msgid "Allows email"
 msgstr "E-Mailkontakt gestattet"
 
 #: CRM/Selectioncorrection/FilterHandler.php
+msgid "Has email address"
+msgstr "E-Mailadresse vorhanden"
+
+#: CRM/Selectioncorrection/FilterHandler.php
 msgid "Allows mail"
 msgstr "Postalischer Kontakt gestattet"
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Has mail address"
+msgstr "Postalische Adresse vorhanden"
 
 #: CRM/Selectioncorrection/FilterHandler.php
 msgid "Allows event invitation (custom)"

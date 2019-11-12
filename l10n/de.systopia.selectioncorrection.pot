@@ -78,7 +78,15 @@ msgid "Allows email"
 msgstr ""
 
 #: CRM/Selectioncorrection/FilterHandler.php
+msgid "Has email address"
+msgstr ""
+
+#: CRM/Selectioncorrection/FilterHandler.php
 msgid "Allows mail"
+msgstr ""
+
+#: CRM/Selectioncorrection/FilterHandler.php
+msgid "Has mail address"
 msgstr ""
 
 #: CRM/Selectioncorrection/FilterHandler.php
