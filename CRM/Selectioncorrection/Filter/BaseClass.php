@@ -44,7 +44,8 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
     }
 
     /**
-     * Adds a subwhere statement for checking if a column is zero or null.
+     * Adds a subwhere statement for checking if a column is zero or null. \
+     * NOTE: This must only be used for numeric (integer, float, boolean etc.) fields, NOT for strings because they equal zero!
      * @param Where $where The where statement this should be added to.
      * @param string $column The column which shall be checked.
      */
@@ -54,6 +55,34 @@ abstract class CRM_Selectioncorrection_Filter_BaseClass
 
         $subwhere->equals($column, 0)
                  ->isNull($column);
+    }
+
+    /**
+     * Adds a subwhere statement for checking if a column is not zero or null. \
+     * NOTE: This must only be used for numeric (integer, float, boolean etc.) fields, NOT for strings because they equal zero!
+     * @param Where $where The where statement this should be added to.
+     * @param string $column The column which shall be checked.
+     */
+    protected function addSubwhereIsNotZeroOrNull (Where $where, string $column)
+    {
+        $subwhere = $where->subWhere('AND');
+
+        $subwhere->notEquals($column, 0)
+                 ->isNotNull($column);
+    }
+
+    /**
+     * Adds a subwhere statement for checking if a column is not empty or null. \
+     * NOTE: This should be used for string type fields and could have unintended behaviour for numeric ones.
+     * @param Where $where The where statement this should be added to.
+     * @param string $column The column which shall be checked.
+     */
+    protected function addSubwhereIsNotEmptyOrNull (Where $where, string $column)
+    {
+        $subwhere = $where->subWhere('AND');
+
+        $subwhere->notEquals($column, '')
+                 ->isNotNull($column);
     }
 
     /**
