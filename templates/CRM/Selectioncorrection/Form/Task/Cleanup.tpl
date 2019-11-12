@@ -41,15 +41,15 @@
         <div class="content">
           <br>
           <span id="contact_person_quick_setting_all" class="crm-button contact-person-button">
-            <span>{ts}Set all contact persons and organisations.{/ts}</span>
+            <input value="{ts}Set all contact persons and organisations.{/ts}" type="button" class="crm-form-submit cancel">
           </span>
           <br><br>
           <span id="contact_person_quick_setting_contact_persons_only" class="crm-button contact-person-button">
-            <span>{ts}Set all contact persons.{/ts}</span>
+            <input value="{ts}Set all contact persons.{/ts}" type="button" class="crm-form-submit cancel">
           </span>
           <br><br>
           <span id="contact_person_quick_setting_organisations_only" class="crm-button contact-person-button">
-            <span>{ts}Set all organisations.{/ts}</span>
+            <input value="{ts}Set all organisations.{/ts}" type="button" class="crm-form-submit cancel">
           </span>
           <br><br><br>
         </div>
