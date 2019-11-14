@@ -138,9 +138,9 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
         $related_field = CRM_Selectioncorrection_Config::getRelatedAddresseeField();
 
         $selects[] = "COALESCE(
-          IF(({$address_alias}.contact_id = {$metadata_alias}.contact_id) AND ({$address_alias}.location_type_id <> 2), '', NULL),
-          IF(({$address_alias}.contact_id = {$metadata_alias}.contact_id) AND ({$address_alias}.location_type_id  = 2), {$contact_addressee_alias}.{$contact_field}, NULL),
-          IF(({$address_alias}.contact_id <> {$metadata_alias}.contact_id)), {$related_addressee_alias}.{$related_field}, NULL)
+          IF({$address_alias}.contact_id = {$metadata_alias}.contact_id AND {$address_alias}.location_type_id <> 2, '', NULL),
+          IF({$address_alias}.contact_id = {$metadata_alias}.contact_id AND {$address_alias}.location_type_id  = 2, {$contact_addressee_alias}.{$contact_field}, NULL),
+          IF({$address_alias}.contact_id <> {$metadata_alias}.contact_id,                                           {$related_addressee_alias}.{$related_field}, NULL)
         ) AS {$value_prefix}{$field_name}";
 
       } elseif (substr($field_name, 0, 9) == 'greeting_') {
