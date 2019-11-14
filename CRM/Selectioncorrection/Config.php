@@ -72,4 +72,43 @@ class CRM_Selectioncorrection_Config
       // FIXME: move to config
       return [12,19,20];
     }
+
+    /**
+     * Configuration for the magic_addressee field, the contact's part
+     *
+     * @return string DB field name for the contact's addressee field
+     */
+    public static function getContactAddresseeField() {
+      $field = CRM_Selectioncorrection_CustomData::getCustomField('individual_zusatzinfo', 'individual_employer');
+      return $field['column_name'];
+    }
+
+    /**
+     * Configuration for the magic_addressee field, the related organisation's part
+     *
+     * @return string DB field name for the contact's addressee field
+     */
+    public static function getRelatedAddresseeField() {
+      $field = CRM_Selectioncorrection_CustomData::getCustomField('more_greetings_group', 'greeting_field_4');
+      return $field['column_name'];
+    }
+
+
+    /**
+     * Configuration for the magic_addressee field, the related organisation's part
+     *
+     * @return string DB field name for the contact's addressee field
+     */
+    public static function getContactAddresseeTable() {
+      return CRM_Selectioncorrection_CustomData::getGroupTable('individual_zusatzinfo');
+    }
+
+    /**
+     * Configuration for the magic_addressee field, the related organisation's part
+     *
+     * @return string DB field name for the contact's addressee field
+     */
+    public static function getRelatedAddresseeTable() {
+      return CRM_Selectioncorrection_CustomData::getGroupTable('more_greetings_group');
+    }
 }

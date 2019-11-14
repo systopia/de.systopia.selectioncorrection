@@ -91,6 +91,21 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
       $greetings_alias = $this->getAlias('greetings');
       $joins[] = "LEFT JOIN civicrm_value_moregreetings {$greetings_alias} ON {$greetings_alias}.entity_id = COALESCE({$related_contact_alias}.id, {$contact_term})";
     }
+
+    // add special magic_addressee field
+    foreach ($this->config['fields'] as $field_spec) {
+      if ($field_spec['key'] == 'magic_addressee') {
+        $contact_addressee_alias = $this->getAlias('contact_addressee');
+        $contact_table = CRM_Selectioncorrection_Config::getContactAddresseeTable();
+        $joins[] = "LEFT JOIN {$contact_table} {$contact_addressee_alias} ON {$contact_addressee_alias}.entity_id = {$contact_term}";
+
+        $related_addressee_alias = $this->getAlias('related_addressee');
+        $related_table = CRM_Selectioncorrection_Config::getRelatedAddresseeTable();
+        $joins[] = "LEFT JOIN {$related_table} {$related_addressee_alias} ON {$related_addressee_alias}.entity_id = {$related_contact_alias}.id";
+
+        break;
+      }
+    }
   }
 
   /**
@@ -99,6 +114,7 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
    * "contact" or this module's joins
    */
   public function addSelects(&$selects) {
+    $metadata_alias  = $this->getAlias('metadata');
     $related_contact = $this->getAlias('related_contact');
     $address_alias   = $this->getAlias('address');
     $greetings_alias = $this->getAlias('greetings');
@@ -110,6 +126,22 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
         // add address field
         $column_name = substr($field_name, 5);
         $selects[] = "{$address_alias}.{$column_name} AS {$value_prefix}{$field_name}";
+
+      } elseif ($field_name == 'magic_addressee') {
+        // the "magic_addressee" is the organisation name, depending on the setup:
+        //  1) empty for private contacts
+        //  2) certain custom field for work addresses
+        //  3) (related) organisations custom field otherwise
+        $contact_addressee_alias = $this->getAlias('contact_addressee');
+        $contact_field = CRM_Selectioncorrection_Config::getContactAddresseeField();
+        $related_addressee_alias = $this->getAlias('related_addressee');
+        $related_field = CRM_Selectioncorrection_Config::getRelatedAddresseeField();
+
+        $selects[] = "COALESCE(
+          IF(({$address_alias}.contact_id = {$metadata_alias}.contact_id) AND ({$address_alias}.location_type_id <> 2), '', NULL),
+          IF(({$address_alias}.contact_id = {$metadata_alias}.contact_id) AND ({$address_alias}.location_type_id  = 2), {$contact_addressee_alias}.{$contact_field}, NULL),
+          IF(({$address_alias}.contact_id <> {$metadata_alias}.contact_id)), {$related_addressee_alias}.{$related_field}, NULL)
+        ) AS {$value_prefix}{$field_name}";
 
       } elseif (substr($field_name, 0, 9) == 'greeting_') {
         // add greetings field
