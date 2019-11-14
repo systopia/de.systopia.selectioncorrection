@@ -20,7 +20,7 @@ use CRM_Xportx_ExtensionUtil as E;
  */
 class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
 
-  protected static $group_by_issued = FALSE;
+  protected static $metadata_alias = NULL;
 
   /**
    * This module can do with any base_table
@@ -51,9 +51,14 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
     $group_alias = $this->export->getBaseAlias();
     $group_term = "{$group_alias}.group_id";
 
-    // add metadata join
-    $metadata_alias = $this->getAlias('metadata');
-    $joins[] = "LEFT JOIN civicrm_group_contact_metadata {$metadata_alias} ON {$metadata_alias}.contact_id = {$contact_term} AND {$metadata_alias}.group_id = {$group_term}";
+    // add metadata join (only once!)
+    if (self::$metadata_alias === NULL) {
+      $metadata_alias = $this->getAlias('metadata');
+      $joins[] = "LEFT JOIN civicrm_group_contact_metadata {$metadata_alias} ON {$metadata_alias}.contact_id = {$contact_term} AND {$metadata_alias}.group_id = {$group_term}";
+      self::$metadata_alias = $metadata_alias;
+    } else {
+      $metadata_alias = self::$metadata_alias;
+    }
 
     // add relationship joins (both ways)
     $relationship_a_alias = $this->getAlias('relationship_a');
@@ -114,7 +119,7 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
    * "contact" or this module's joins
    */
   public function addSelects(&$selects) {
-    $metadata_alias  = $this->getAlias('metadata');
+    $metadata_alias  = self::$metadata_alias;
     $related_contact = $this->getAlias('related_contact');
     $address_alias   = $this->getAlias('address');
     $greetings_alias = $this->getAlias('greetings');
@@ -160,13 +165,12 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
    * @return array clauses
    */
   public function getGroupClauses() {
-    if (self::$group_by_issued) {
-      // group by already used by other instance
-      return [];
-    } else {
-      self::$group_by_issued = TRUE;
-      $metadata_alias = $this->getAlias('metadata');
+    $metadata_alias = $this->getAlias('metadata');
+    if (self::$metadata_alias == $metadata_alias) {
+      // only join the one metadata alias
       return ["{$metadata_alias}.relationship_id"];
+    } else {
+      return [];
     }
   }
 
