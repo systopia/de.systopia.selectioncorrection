@@ -119,11 +119,12 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
    * "contact" or this module's joins
    */
   public function addSelects(&$selects) {
-    $metadata_alias  = self::$metadata_alias;
-    $related_contact = $this->getAlias('related_contact');
-    $address_alias   = $this->getAlias('address');
-    $greetings_alias = $this->getAlias('greetings');
-    $value_prefix    = $this->getValuePrefix();
+    $metadata_alias    = self::$metadata_alias;
+    $related_contact   = $this->getAlias('related_contact');
+    $address_alias     = $this->getAlias('address');
+    $greetings_alias   = $this->getAlias('greetings');
+    $address_self_work = $this->getAlias('address_self_work');
+    $value_prefix      = $this->getValuePrefix();
 
     foreach ($this->config['fields'] as $field_spec) {
       $field_name = $field_spec['key'];
@@ -134,19 +135,21 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
 
       } elseif ($field_name == 'magic_addressee') {
         // the "magic_addressee" is the organisation name, depending on the setup:
-        //  1)   empty for private contacts with private address
-        //  2/3) custom field for contacts with work address (private or contact)
-        //  4)   related organisation's name for contact person with non-work address
+        //  1) empty for private contacts with private address
+        //  2  custom field for private contacts with work address
+        //  3) custom field for contact person with (own) work address
+        //  4) related organisation's name for contact person with no own work address
         $contact_addressee_alias = $this->getAlias('contact_addressee');
         $contact_field = CRM_Selectioncorrection_Config::getContactAddresseeField();
-        $related_addressee_alias = $this->getAlias('related_addressee');
-        $related_field = CRM_Selectioncorrection_Config::getRelatedAddresseeField();
 
         $selects[] = "COALESCE(
           IF(({$metadata_alias}.contact_id IS NULL OR {$address_alias}.contact_id = {$metadata_alias}.contact_id) 
              AND {$address_alias}.location_type_id <> 2,     '',                                          NULL),
-          IF({$address_alias}.location_type_id = 2,          {$contact_addressee_alias}.{$contact_field}, NULL),
-          IF({$metadata_alias}.contact_id IS NOT NULL,       {$related_contact}.display_name,             NULL)
+          IF(({$metadata_alias}.contact_id IS NULL OR {$address_alias}.contact_id = {$metadata_alias}.contact_id) 
+             AND {$address_alias}.location_type_id = 2,      {$contact_addressee_alias}.{$contact_field}, NULL),
+          IF({$address_self_work}.id = {$address_alias}.id 
+             AND {$address_alias}.location_type_id = 2,      {$contact_addressee_alias}.{$contact_field}, NULL),
+          IF({$address_self_work}.id IS NULL,                {$related_contact}.display_name,             NULL)
         ) AS {$value_prefix}{$field_name}";
 
       } elseif (substr($field_name, 0, 9) == 'greeting_') {
