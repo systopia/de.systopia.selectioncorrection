@@ -39,7 +39,7 @@ class CRM_Selectioncorrection_FilterHandler
             new CRM_Selectioncorrection_Filter_ContactFieldNotSet('Allows mail', 'do_not_mail'),
             // FIXME: The following filter is insufficient. A street address is not enough for postal mailing.
             new CRM_Selectioncorrection_Filter_HasDataInAssociatedTable('Has mail address', 'civicrm_address', 'street_address'),
-            new CRM_Selectioncorrection_Filter_BulkmailSet(),
+            //new CRM_Selectioncorrection_Filter_BulkmailSet(), // DISABLED FOR NOW.
             //new CRM_Selectioncorrection_Filter_NotInGroup(),  // DISABLED FOR NOW.
             new CRM_Selectioncorrection_Filter_CustomFieldNotSet('Allows event invitation (custom)', 'besonderheiten', 'bes_29883'),
             new CRM_Selectioncorrection_Filter_CustomFieldNotSet('Allows RW (custom)', 'besonderheiten', 'bes_30170'),
