@@ -28,7 +28,7 @@ class CRM_Selectioncorrection_Filter_BulkmailSet extends CRM_Selectioncorrection
         $select->innerJoin(
             'civicrm_email',
             'id',
-            'id'
+            'contact_id'
         )
         ->on()
         ->equals('is_primary', 1)
