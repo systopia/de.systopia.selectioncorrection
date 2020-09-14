@@ -62,7 +62,6 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
         $correctedContactsFromIndividuals = $householdCorrection->addHouseholdsWithMultipleMembersPresent($individualContacts);
         $group->add($correctedContactsFromIndividuals);
 
-
         // Regel 8:
         // Einzelkontakte immer aussortierten, wenn auch ihr Haushalt in der Logik ist:
 
@@ -84,8 +83,8 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
 
         // add a nice popup for easier export
         if (function_exists('xportx_civicrm_enable')) {
-          $url = CRM_Utils_System::url('civicrm/xportx/group', 'group_id=' . $group->getGroupId());
-          CRM_Core_Session::setStatus(E::ts('You can export the results <a href="%1">HERE</a>.', [1 => $url]), E::ts("Export Successful"), 'info');
+            $url = CRM_Utils_System::url('civicrm/xportx/group', 'group_id=' . $group->getGroupId());
+            CRM_Core_Session::setStatus(E::ts('You can export the results <a href="%1">HERE</a>.', [1 => $url]), E::ts("Export Successful"), 'info');
         }
 
         // Forward to the created group instead of automatically showing the search result again:
