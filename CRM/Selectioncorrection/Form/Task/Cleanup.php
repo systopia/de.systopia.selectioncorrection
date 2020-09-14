@@ -49,13 +49,27 @@ class CRM_Selectioncorrection_Form_Task_Cleanup extends CRM_Selectioncorrection_
 
         $householdCorrection = CRM_Selectioncorrection_HouseholdCorrection::getSingleton();
 
-        $correctedContacts = $householdCorrection->removeSinglePersonHouseholds($householdContacts);
-        $group->add($correctedContacts);
+        // Regel 2:
+        // Ist ein Haushalt in der Selektion, der weniger als 2 (nach Filter) aktive* Haushaltsmitglieder hat,
+        // so wird der Haushalt nicht übernommen und stattdessen die Haushaltsmitglieder aufgenommen
+        // (also einer oder keiner):
+        $correctedContactsFromHouseholds = $householdCorrection->removeSinglePersonHouseholds($householdContacts);
+        $group->add($correctedContactsFromHouseholds);
 
-        $correctedContacts = $householdCorrection->addHouseholdsWithMultipleMembersPresent($individualContacts);
-        $group->add($correctedContacts);
+        // Regel 3:
+        // Sind zwei (oder mehr, nach Filter) aktive Haushaltsmitglieder in der Selektion, so sollen diese nicht
+        // übernommen, und stattdessen der Haushalt hinzugefügt werden:
+        $correctedContactsFromIndividuals = $householdCorrection->addHouseholdsWithMultipleMembersPresent($individualContacts);
+        $group->add($correctedContactsFromIndividuals);
 
-        $contactsToBeRemoved = $householdCorrection->getIndividualsWithHouseholdPresent($individualContacts, $householdContacts);
+
+        // Regel 8:
+        // Einzelkontakte immer aussortierten, wenn auch ihr Haushalt in der Logik ist:
+
+        // BUT use Contacts from the original individuals without the ones we inserted in rule 2:
+        $remainingIndividuals = array_diff($individualContacts, $correctedContactsFromHouseholds);
+
+        $contactsToBeRemoved = $householdCorrection->getIndividualsWithHouseholdPresent($remainingIndividuals, $householdContacts);
         $group->remove($contactsToBeRemoved);
 
         $filteredContactPersons = CRM_Selectioncorrection_Storage::getWithDefault(CRM_Selectioncorrection_Config::FilteredContactPersonsStorageKey, []);
