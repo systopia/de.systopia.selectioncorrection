@@ -136,7 +136,7 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
       } elseif ($field_name == 'magic_addressee') {
         // the "magic_addressee" is the organisation name, depending on the setup:
         //  1) empty for private contacts with private address
-        //  2  custom field for private contacts with work address
+        //  2  custom field for private contacts with non-private address
         //  3) custom field for contact person with (own) work address
         //  4) related organisation's name for contact person with no own work address
         $contact_addressee_alias = $this->getAlias('contact_addressee');
@@ -144,9 +144,9 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
 
         $selects[] = "COALESCE(
           IF(({$metadata_alias}.contact_id IS NULL OR {$address_alias}.contact_id = {$metadata_alias}.contact_id) 
-             AND {$address_alias}.location_type_id <> 2,     '',                                          NULL),
+             AND {$address_alias}.location_type_id = 1,     '',                                          NULL),
           IF(({$metadata_alias}.contact_id IS NULL OR {$address_alias}.contact_id = {$metadata_alias}.contact_id) 
-             AND {$address_alias}.location_type_id = 2,      {$contact_addressee_alias}.{$contact_field}, NULL),
+             AND {$address_alias}.location_type_id <> 1,      {$contact_addressee_alias}.{$contact_field}, NULL),
           IF({$address_self_work}.id = {$address_alias}.id 
              AND {$address_alias}.location_type_id = 2,      {$contact_addressee_alias}.{$contact_field}, NULL),
           IF({$address_self_work}.id IS NULL,                {$related_contact}.display_name,             NULL)
