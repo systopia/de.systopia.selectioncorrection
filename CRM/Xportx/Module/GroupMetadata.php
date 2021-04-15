@@ -142,12 +142,15 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
         //  1) empty for non-work address
         //  2) contact.organization_name if not empty
         //  3) custom field organisation name
+
+        // prep for custom field
+        $contact_addressee_alias = $this->getAlias('contact_addressee');
         $contact_field = CRM_Selectioncorrection_Config::getContactAddresseeField();
 
         $selects[] = "COALESCE(
           IF({$address_alias}.location_type_id <> 2, '', NULL),
-          IF(LENGTH({$main_contact_alias}.organization_name) > 0, {$main_contact_alias}.organization_name, NULL)
-          {$main_contact_alias}.{$contact_field}
+          IF(LENGTH({$main_contact_alias}.organization_name) > 0, {$main_contact_alias}.organization_name, NULL), 
+          {$contact_addressee_alias}.{$contact_field}
         ) AS {$value_prefix}{$field_name}";
 
       } elseif ($field_name == 'magic_addressee_old') {
