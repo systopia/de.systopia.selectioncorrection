@@ -99,7 +99,7 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
 
     // add special magic_addressee field
     foreach ($this->config['fields'] as $field_spec) {
-      if ($field_spec['key'] == 'magic_addressee') {
+      if ($field_spec['key'] == 'magic_addressee' || $field_spec['key'] == 'magic_job_title') {
         $contact_addressee_alias = $this->getAlias('contact_addressee');
         $contact_table = CRM_Selectioncorrection_Config::getContactAddresseeTable();
         $joins[] = "LEFT JOIN {$contact_table} {$contact_addressee_alias} ON {$contact_addressee_alias}.entity_id = {$contact_term}";
@@ -136,6 +136,11 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
         // add address field
         $column_name = substr($field_name, 5);
         $selects[] = "{$address_alias}.{$column_name} AS {$value_prefix}{$field_name}";
+
+      } elseif ($field_name == 'magic_job_title') {
+        // the "magic_job_title" the contact's job title, IF they have a work address
+        $selects[] = "IF({$address_alias}.location_type_id <> 2, {$main_contact_alias}.job_title, '')
+                      AS {$value_prefix}{$field_name}";
 
       } elseif ($field_name == 'magic_addressee') {
         // the "magic_addressee" is the organisation name, determined by the following factors:
