@@ -139,7 +139,7 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
 
       } elseif ($field_name == 'magic_job_title') {
         // the "magic_job_title" the contact's job title, IF they have a work address
-        $selects[] = "IF({$address_alias}.location_type_id <> 2, {$main_contact_alias}.job_title, '')
+        $selects[] = "IF({$address_alias}.location_type_id = 2, {$main_contact_alias}.job_title, '')
                       AS {$value_prefix}{$field_name}";
 
       } elseif ($field_name == 'magic_addressee') {
