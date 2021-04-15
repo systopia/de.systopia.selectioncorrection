@@ -108,6 +108,9 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
         $related_table = CRM_Selectioncorrection_Config::getRelatedAddresseeTable();
         $joins[] = "LEFT JOIN {$related_table} {$related_addressee_alias} ON {$related_addressee_alias}.entity_id = {$related_contact_alias}.id";
 
+        $main_contact_alias = $this->getAlias('main_contact');
+        $joins[] = "LEFT JOIN civicrm_contact {$main_contact_alias} ON {$main_contact_alias}.id = {$contact_term}";
+
         break;
       }
     }
@@ -119,12 +122,13 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
    * "contact" or this module's joins
    */
   public function addSelects(&$selects) {
-    $metadata_alias    = self::$metadata_alias;
-    $related_contact   = $this->getAlias('related_contact');
-    $address_alias     = $this->getAlias('address');
-    $greetings_alias   = $this->getAlias('greetings');
-    $address_self_work = $this->getAlias('address_self_work');
-    $value_prefix      = $this->getValuePrefix();
+    $metadata_alias     = self::$metadata_alias;
+    $main_contact_alias = $this->getAlias('main_contact');
+    $related_contact    = $this->getAlias('related_contact');
+    $address_alias      = $this->getAlias('address');
+    $greetings_alias    = $this->getAlias('greetings');
+    $address_self_work  = $this->getAlias('address_self_work');
+    $value_prefix       = $this->getValuePrefix();
 
     foreach ($this->config['fields'] as $field_spec) {
       $field_name = $field_spec['key'];
@@ -134,6 +138,19 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
         $selects[] = "{$address_alias}.{$column_name} AS {$value_prefix}{$field_name}";
 
       } elseif ($field_name == 'magic_addressee') {
+        // the "magic_addressee" is the organisation name, determined by the following factors:
+        //  1) empty for non-work address
+        //  2) contact.organization_name if not empty
+        //  3) custom field organisation name
+        $contact_field = CRM_Selectioncorrection_Config::getContactAddresseeField();
+
+        $selects[] = "COALESCE(
+          IF({$address_alias}.location_type_id <> 2, '', NULL),
+          IF(LENGTH({$main_contact_alias}.organization_name) > 0, {$main_contact_alias}.organization_name, NULL)
+          {$main_contact_alias}.{$contact_field}
+        ) AS {$value_prefix}{$field_name}";
+
+      } elseif ($field_name == 'magic_addressee_old') {
         // the "magic_addressee" is the organisation name, depending on the setup:
         //  1) empty for private contacts with private address
         //  2  custom field for private contacts with non-private address
