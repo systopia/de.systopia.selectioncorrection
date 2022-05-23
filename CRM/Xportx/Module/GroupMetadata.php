@@ -38,6 +38,68 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
     return 'groupmeta';
   }
 
+
+
+
+
+
+  /** @var array list of aliases to avoid duplicate joins */
+  protected static $unique_joins_by_module_class = [];
+
+  /** @var array list of aliases to avoid duplicate joins */
+  protected $alias_mapping = [];
+
+  /**
+   * Experimental function to try to join a target table only ONCE
+   *
+   * @param array $joins
+   *  the $joins list passed to the module's addJoins function, to be
+   *
+   * @param string $preferred_alias
+   *  the preferred alias
+   *
+   * @param string $join_template
+   *  the join template, with the _actual_ $alias represented as a token, see below.
+   *
+   * @param string $alias_token
+   *  the string that represents the final alias in the join expression.
+   *
+   * @return string
+   *   the alias to refer to the join
+   *
+   * @todo migrate to CRM_Xportx_Module if it works well
+   * @todo only allow within instances of the same module?
+   */
+  protected function addUniqueJoin(&$joins, $preferred_alias, $join_template, $alias_token = 'ALIAS')
+  {
+    $module_class = get_class($this);
+    if (isset(self::$unique_joins_by_module_class[$module_class][$join_template])) {
+      // we have already joined this, probably in another instance of this module
+      $shared_alias = self::$unique_joins_by_module_class[$module_class][$join_template];
+      $this->alias_mapping[$preferred_alias] = $shared_alias;
+      return $shared_alias;
+
+    } else {
+      // this is the first of this kind/pattern:
+      $alias = $this->getAlias($preferred_alias);
+      $join = preg_replace("/{$alias_token}/", $alias, $join_template);
+      $joins[] = $join;
+      self::$unique_joins_by_module_class[$module_class][$join_template] = $alias;
+      return $alias;
+    }
+  }
+
+  /**
+   * Get a unique alias for the given (internal) name
+   * $name must be all lowercase chars: [a-z]+
+   *
+   * @todo migrate to CRM_Xportx_Module if it works well
+   */
+  protected function getAlias($name)
+  {
+    return $this->alias_mapping[$name] ?? parent::getAlias($name);
+  }
+
   /**
    * add this module's joins clauses to the list
    * they can only refer to the main contact table
@@ -52,43 +114,40 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
     $group_term = "{$group_alias}.group_id";
 
     // add metadata join (only once!)
-    if (self::$metadata_alias === NULL) {
-      $metadata_alias = $this->getAlias('metadata');
-      $joins[] = "LEFT JOIN civicrm_group_contact_metadata {$metadata_alias} ON {$metadata_alias}.contact_id = {$contact_term} AND {$metadata_alias}.group_id = {$group_term}";
-      self::$metadata_alias = $metadata_alias;
-    } else {
-      $metadata_alias = self::$metadata_alias;
-    }
+    $join_template = "LEFT JOIN civicrm_group_contact_metadata ALIAS ON ALIAS.contact_id = {$contact_term} AND ALIAS.group_id = {$group_term}";
+    $metadata_alias = $this->addUniqueJoin($joins, 'metadata', $join_template);
 
-    // add relationship joins (both ways)
-    $relationship_a_alias = $this->getAlias('relationship_a');
-    $relationship_b_alias = $this->getAlias('relationship_b');
-    $joins[] = "LEFT JOIN civicrm_relationship {$relationship_a_alias} ON {$relationship_a_alias}.id = {$metadata_alias}.relationship_id AND {$relationship_a_alias}.contact_id_a = {$metadata_alias}.contact_id";
-    $joins[] = "LEFT JOIN civicrm_relationship {$relationship_b_alias} ON {$relationship_a_alias}.id = {$metadata_alias}.relationship_id AND {$relationship_b_alias}.contact_id_b = {$metadata_alias}.contact_id";
+    // add relationship joins (both ways) (only once!)
+    $join_template = "LEFT JOIN civicrm_relationship ALIAS ON ALIAS.id = {$metadata_alias}.relationship_id AND ALIAS.contact_id_a = {$metadata_alias}.contact_id";
+    $relationship_a_alias = $this->addUniqueJoin($joins, 'relationship_a', $join_template);
+    $join_template = "LEFT JOIN civicrm_relationship ALIAS ON {$relationship_a_alias}.id = {$metadata_alias}.relationship_id AND ALIAS.contact_id_b = {$metadata_alias}.contact_id";
+    $relationship_b_alias = $this->addUniqueJoin($joins, 'relationship_b', $join_template);
 
     // add other contact join
-    $related_contact_alias = $this->getAlias('related_contact');
-    $joins[] = "LEFT JOIN civicrm_contact {$related_contact_alias} ON {$related_contact_alias}.id = COALESCE({$relationship_a_alias}.contact_id_b, {$relationship_b_alias}.contact_id_a)";
+    $join_template = "LEFT JOIN civicrm_contact ALIAS ON ALIAS.id = COALESCE({$relationship_a_alias}.contact_id_b, {$relationship_b_alias}.contact_id_a)";
+    $related_contact_alias = $this->addUniqueJoin($joins, 'related_contact', $join_template);
 
     // add ADDRESS: picked from option
     //  no relation: contact.primary
     //     relation: contact.work (2)
     //      -> else: related.work (2)
-    $address_option1_alias = $this->getAlias('address_self');
-    $joins[] = "LEFT JOIN civicrm_address {$address_option1_alias} ON {$address_option1_alias}.contact_id = {$contact_term} AND {$address_option1_alias}.is_primary = 1";
-    $address_option2_alias = $this->getAlias('address_self_work');
-    $joins[] = "LEFT JOIN civicrm_address {$address_option2_alias} ON {$address_option2_alias}.contact_id = {$contact_term} AND {$address_option2_alias}.location_type_id = 2";
-    $address_option3_alias = $this->getAlias('address_org_work');
-    $joins[] = "LEFT JOIN civicrm_address {$address_option3_alias} ON {$address_option3_alias}.contact_id = {$related_contact_alias}.id AND {$address_option3_alias}.location_type_id = 2";
+    $join_template_self = "LEFT JOIN civicrm_address ADDRESS_SELF ON ADDRESS_SELF.contact_id = {$contact_term} AND ADDRESS_SELF.is_primary = 1";
+    $address_option1_alias = $this->addUniqueJoin($joins,'address_self', $join_template_self, 'ADDRESS_SELF');
+
+    $join_template_self_work = "LEFT JOIN civicrm_address ADDRESS_SELF_WORK ON ADDRESS_SELF_WORK.contact_id = {$contact_term} AND ADDRESS_SELF_WORK.location_type_id = 2";
+    $address_option2_alias = $this->addUniqueJoin($joins,'address_self_work', $join_template_self_work, 'ADDRESS_SELF_WORK');
+
+    $join_template_self_option3 = "LEFT JOIN civicrm_address ADDRESS_COMPANY ON ADDRESS_COMPANY.contact_id = {$related_contact_alias}.id AND ADDRESS_COMPANY.location_type_id = 2";
+    $address_option3_alias = $this->addUniqueJoin($joins,'address_org_work', $join_template_self_option3, 'ADDRESS_COMPANY');
 
     // join the final address
-    $address_alias = $this->getAlias('address');
-    $joins[] = "LEFT JOIN civicrm_address {$address_alias} ON {$address_alias}.id =
+    $join_template_address = "LEFT JOIN civicrm_address ALIAS ON ALIAS.id =
       COALESCE(
         IF({$related_contact_alias}.id IS NULL,     {$address_option1_alias}.id, NULL),
         IF({$related_contact_alias}.id IS NOT NULL, {$address_option2_alias}.id, NULL),
         IF({$related_contact_alias}.id IS NOT NULL, {$address_option3_alias}.id, NULL)
        )";
+    $address_alias = $this->addUniqueJoin($joins,'address', $join_template_address);
 
     // add more greetings
     if ($this->hasMoreGreetings()) {
