@@ -55,8 +55,8 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
    * @param array $joins
    *  the $joins list passed to the module's addJoins function, to be
    *
-   * @param string $preferred_alias
-   *  the preferred alias
+   * @param string $requested_alias
+   *  the preferred alias, but will be altered either through "join sharing" or the getAlias function
    *
    * @param string $join_template
    *  the join template, with the _actual_ $alias represented as a token, see below.
@@ -70,18 +70,20 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
    * @todo migrate to CRM_Xportx_Module if it works well
    * @todo only allow within instances of the same module?
    */
-  protected function addUniqueJoin(&$joins, $preferred_alias, $join_template, $alias_token = 'ALIAS')
+  protected function addUniqueJoin(&$joins, $requested_alias, $join_template, $alias_token = 'ALIAS')
   {
     $module_class = get_class($this);
     if (isset(self::$unique_joins_by_module_class[$module_class][$join_template])) {
       // we have already joined this, probably in another instance of this module
       $shared_alias = self::$unique_joins_by_module_class[$module_class][$join_template];
-      $this->alias_mapping[$preferred_alias] = $shared_alias;
+
+      // register as local alias
+      $this->alias_mapping[$requested_alias] = $shared_alias;
       return $shared_alias;
 
     } else {
       // this is the first of this kind/pattern:
-      $alias = $this->getAlias($preferred_alias);
+      $alias = $this->getAlias($requested_alias);
       $join = preg_replace("/{$alias_token}/", $alias, $join_template);
       $joins[] = $join;
       self::$unique_joins_by_module_class[$module_class][$join_template] = $alias;
@@ -152,20 +154,20 @@ class CRM_Xportx_Module_GroupMetadata extends CRM_Xportx_Module {
     // add more greetings
     if ($this->hasMoreGreetings()) {
       // add more greetings of the related contact. if none exists, the own
-      $greetings_alias = $this->getAlias('greetings');
-      $joins[] = "LEFT JOIN civicrm_value_moregreetings {$greetings_alias} ON {$greetings_alias}.entity_id = COALESCE({$related_contact_alias}.id, {$contact_term})";
+      $join_template = "LEFT JOIN civicrm_value_moregreetings ALIAS ON ALIAS.entity_id = COALESCE({$related_contact_alias}.id, {$contact_term})";
+      $greetings_alias = $this->addUniqueJoin($joins, 'greetings', $join_template);
     }
 
     // add special magic_addressee field
     foreach ($this->config['fields'] as $field_spec) {
       if ($field_spec['key'] == 'magic_addressee' || $field_spec['key'] == 'magic_job_title') {
-        $contact_addressee_alias = $this->getAlias('contact_addressee');
         $contact_table = CRM_Selectioncorrection_Config::getContactAddresseeTable();
-        $joins[] = "LEFT JOIN {$contact_table} {$contact_addressee_alias} ON {$contact_addressee_alias}.entity_id = {$contact_term}";
+        $join_template = "LEFT JOIN {$contact_table} ALIAS ON ALIAS.entity_id = {$contact_term}";
+        $contact_addressee_alias = $this->addUniqueJoin($joins, 'contact_addressee', $join_template);
 
-        $related_addressee_alias = $this->getAlias('related_addressee');
         $related_table = CRM_Selectioncorrection_Config::getRelatedAddresseeTable();
-        $joins[] = "LEFT JOIN {$related_table} {$related_addressee_alias} ON {$related_addressee_alias}.entity_id = {$related_contact_alias}.id";
+        $join_template = "LEFT JOIN {$related_table} ALIAS ON ALIAS.entity_id = {$related_contact_alias}.id";
+        $related_addressee_alias = $this->addUniqueJoin($joins, 'related_addressee', $join_template);
 
         $main_contact_alias = $this->getAlias('main_contact');
         $joins[] = "LEFT JOIN civicrm_contact {$main_contact_alias} ON {$main_contact_alias}.id = {$contact_term}";
